@@ -39,7 +39,10 @@ export async function POST(req: Request) {
   }
 
   // Honeypot: bots fill hidden fields. Pretend success and drop it.
-  if (clean(body.website, 200)) return NextResponse.json({ ok: true });
+  if (clean(body.hp_x9, 200)) {
+    console.warn("[register] dropped a submission because the hidden trap field was filled");
+    return NextResponse.json({ ok: true });
+  }
 
   const name = clean(body.name, 80);
   const telegram = clean(body.telegram, 64).replace(/^https?:\/\/t\.me\//i, "@");
