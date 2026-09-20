@@ -53,6 +53,19 @@ Everyone who knows the password has the same access. Use a long password and sha
 
 The site creates the `Registrations`, `Settings` and `Content` tabs and the header row by itself on first use. You can also edit the Sheet by hand at any time.
 
+## Connect Google Sheets without a card (Apps Script)
+
+Use this if Google Cloud asks for a card. It is free and runs inside your Sheet.
+
+1. Create a blank Google Sheet. Open **Extensions, Apps Script**.
+2. Delete the sample code and paste all of `google-apps-script/Code.gs`. Save.
+3. Open **Project Settings** (gear icon), then **Script Properties**, then **Add script property**: name `SECRET`, value a long random password. Save.
+4. Press **Deploy, New deployment**, choose type **Web app**. Set "Execute as" to **Me** and "Who has access" to **Anyone**. Deploy and approve the permissions (Advanced, then continue).
+5. Copy the **Web app URL** (ends in `/exec`).
+6. In Vercel (or `.env.local`) set `GOOGLE_SCRIPT_URL` to that URL and `GOOGLE_SCRIPT_SECRET` to the same secret from step 3. Redeploy.
+
+Only requests that carry the secret are accepted. If you edit `Code.gs` later, use **Deploy, Manage deployments, Edit, New version** so the change goes live.
+
 ## Photo storage (free, needed for uploads on Vercel)
 
 Vercel has no permanent disk, so photos go to **Vercel Blob**:
