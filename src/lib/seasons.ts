@@ -1,6 +1,14 @@
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { defaultSeasons, type Chair, type Committee, type L, type Season } from "@/content/seasons";
+import { DATA_TAG } from "./settings";
 import { getStore } from "./store";
+
+// Saved season edits are cached for 60 s (and refreshed right after an admin save) so pages stay fast.
+const readContent = unstable_cache(async () => (await getStore()?.getContent()) ?? {}, ["kmun-content"], {
+  revalidate: 60,
+  tags: [DATA_TAG],
+});
 
 const KEY = (slug: string) => `season:${slug}`;
 
@@ -9,7 +17,7 @@ const KEY = (slug: string) => `season:${slug}`;
 export const getSeasons = cache(async (): Promise<Season[]> => {
   const map = new Map(defaultSeasons.map((s) => [s.slug, s]));
   try {
-    const content = (await getStore()?.getContent()) ?? {};
+    const content = await readContent();
     for (const [key, raw] of Object.entries(content)) {
       if (!key.startsWith("season:")) continue;
       try {

@@ -8,14 +8,13 @@ export function appsScriptConfigured() {
   return Boolean(process.env.GOOGLE_SCRIPT_URL && process.env.GOOGLE_SCRIPT_SECRET);
 }
 
-async function call<T = unknown>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
+async function rawCall<T = unknown>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
   const res = await fetch(process.env.GOOGLE_SCRIPT_URL as string, {
     method: "POST",
-    cache: "no-store",
     redirect: "follow", // Apps Script answers with a redirect to the result
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ secret: process.env.GOOGLE_SCRIPT_SECRET, action, ...payload }),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(8000),
   });
   const text = await res.text();
   let body: { ok?: boolean; data?: T; error?: string };
@@ -27,6 +26,46 @@ async function call<T = unknown>(action: string, payload: Record<string, unknown
   if (!body.ok) throw new Error(`Apps Script error: ${body.error ?? "unknown"}`);
   return body.data as T;
 }
+
+// Apps Script can take a few seconds (especially the first call after a pause). Retry once on failure.
+async function call<T = unknown>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
+  try {
+    return await rawCall<T>(action, payload);
+  } catch (err) {
+    const timedOut = err instanceof Error && err.name === "TimeoutError";
+    if (!timedOut && action !== "append" && action !== "setStatus" && action !== "saveSettings" && action !== "setContent") {
+      return rawCall<T>(action, payload); // reads are safe to repeat; writes are not
+    }
+    throw err;
+  }
+}
+
+// Reads used by public pages are cached briefly, shared between concurrent requests, and fall back to the
+// last good value if Google is slow, so a slow Sheet never blanks or delays the site.
+const TTL = 30_000;
+const cache = new Map<string, { at: number; value: unknown }>();
+const inflight = new Map<string, Promise<unknown>>();
+async function cachedRead<T>(action: string): Promise<T> {
+  const hit = cache.get(action);
+  if (hit && Date.now() - hit.at < TTL) return hit.value as T;
+  let p = inflight.get(action) as Promise<T> | undefined;
+  if (!p) {
+    p = call<T>(action)
+      .then((v) => {
+        cache.set(action, { at: Date.now(), value: v });
+        return v;
+      })
+      .finally(() => inflight.delete(action));
+    inflight.set(action, p);
+  }
+  try {
+    return await p;
+  } catch (err) {
+    if (hit) return hit.value as T; // stale is better than nothing
+    throw err;
+  }
+}
+const forget = (...actions: string[]) => actions.forEach((a) => cache.delete(a));
 
 export const appsScriptStore: Store = {
   kind: "sheets",
@@ -46,7 +85,7 @@ export const appsScriptStore: Store = {
   },
 
   async getSettings(): Promise<Settings | null> {
-    const map = await call<Record<string, string>>("getSettings");
+    const map = await cachedRead<Record<string, string>>("getSettings");
     if (!Object.keys(map).length) return null;
     const num = (k: string) => (map[k] ? Number(map[k]) : NaN);
     return {
@@ -58,6 +97,7 @@ export const appsScriptStore: Store = {
   },
 
   async saveSettings(s) {
+    forget("getSettings");
     await call("saveSettings", {
       values: {
         nextSeasonStart: s.nextSeasonStart ?? "",
@@ -69,11 +109,12 @@ export const appsScriptStore: Store = {
   },
 
   async getContent() {
-    return call<Record<string, string>>("getContent");
+    return cachedRead<Record<string, string>>("getContent");
   },
 
   async setContent(key, value) {
     if (value !== null && value.length > 45000) throw new Error("Content too large for one cell");
+    forget("getContent");
     await call("setContent", { key, value });
   },
 };

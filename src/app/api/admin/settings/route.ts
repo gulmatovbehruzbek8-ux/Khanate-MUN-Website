@@ -1,7 +1,7 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { guard } from "@/lib/auth";
-import { getSettings } from "@/lib/settings";
+import { DATA_TAG, getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -34,6 +34,7 @@ export async function PUT(req: Request) {
 
   try {
     await store.saveSettings({ nextSeasonStart: start, registrationOpen, feeDelegate, feeObserver });
+    revalidateTag(DATA_TAG, { expire: 0 });
     revalidatePath("/", "layout"); // refresh the public pages right away
     return NextResponse.json({ ok: true, nextSeasonStart: start, registrationOpen, feeDelegate, feeObserver });
   } catch (err) {

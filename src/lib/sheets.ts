@@ -23,7 +23,6 @@ async function api<T = unknown>(url: string, init: RequestInit = {}): Promise<T>
   if (!token) throw new Error("Could not get a Google access token");
   const res = await fetch(url, {
     ...init,
-    cache: "no-store",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...init.headers },
   });
   if (!res.ok) throw new Error(`Sheets API ${res.status}: ${await res.text()}`);
