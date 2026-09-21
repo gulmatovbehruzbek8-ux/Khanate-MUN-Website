@@ -80,6 +80,7 @@ export default function TeamAdmin() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ team }),
+      signal: AbortSignal.timeout(50000),
     }).catch(() => null);
     setBusy(false);
     if (res?.ok) {
@@ -89,7 +90,13 @@ export default function TeamAdmin() {
       setMsg("Saved. The public site updates within a minute.");
     } else {
       setMsg("");
-      setErr(res?.status === 400 ? "Add at least one member with a name." : "Could not save. Try again.");
+      const j = res ? await res.json().catch(() => ({})) : {};
+      setErr(
+        !res ? "No answer from the server (timed out). Try again."
+        : res.status === 400 ? "Add at least one member with a name."
+        : res.status === 401 ? "You were signed out. Reload and sign in again."
+        : `Could not save (HTTP ${res.status}${j?.detail ? `: ${j.detail}` : ""}). Try again.`,
+      );
     }
   }
 

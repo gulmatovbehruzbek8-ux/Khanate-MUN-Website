@@ -19,14 +19,17 @@ export async function PUT(req: Request) {
   const body = await req.json().catch(() => null);
   const team = sanitizeTeam(body?.team);
   if (!team.length) return NextResponse.json({ error: "invalid" }, { status: 400 });
+  const t0 = Date.now();
+  console.log(`[admin] saving team (${team.length} members)`);
   try {
     await saveTeam(team);
+    console.log(`[admin] team saved in ${Date.now() - t0} ms`);
     revalidateTag(DATA_TAG, { expire: 0 });
     revalidatePath("/", "layout");
     return NextResponse.json({ ok: true, team });
   } catch (err) {
-    console.error("[admin] saving team failed", err);
-    return NextResponse.json({ error: "server" }, { status: 500 });
+    console.error(`[admin] saving team failed after ${Date.now() - t0} ms`, err);
+    return NextResponse.json({ error: "server", detail: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }
 
