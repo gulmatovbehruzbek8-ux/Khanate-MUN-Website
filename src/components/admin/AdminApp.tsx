@@ -92,7 +92,10 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     setConfirmRow(null);
     setConfirmAll(false);
     if (res?.status === 409) setError("That list was out of date, so nothing was deleted. Refreshed.");
-    else if (!res?.ok) setError("Could not delete. Try again.");
+    else if (!res?.ok) {
+      const j = await res?.json().catch(() => ({}));
+      setError(`Could not delete${j?.detail ? `: ${j.detail}` : ""}. If it says "unknown action", re-deploy the Apps Script (New version).`);
+    }
     await load();
   }
 
@@ -265,6 +268,7 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
               ))}
           </div>
 
+          {error && <div className="err" role="alert" style={{ padding: "8px 0" }}>{error}</div>}
           <div className="adm-scroll">
             <table className="adm-table">
               <thead>
