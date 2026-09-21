@@ -22,8 +22,8 @@ export default async function Committees({ params }: { params: Promise<{ lang: s
           <p>{d.c_p}</p>
         </div>
         {seasons.map((s, i) => (
-          <div key={s.slug}>
-            <div className="season-bar" style={i === 0 ? { marginTop: 0 } : undefined}>
+          <div key={s.slug} className={s.upcoming ? "next-section" : undefined}>
+            <div className="season-bar" style={i === 0 || s.upcoming ? { marginTop: 0 } : undefined}>
               <div className="subhead">{s.upcoming && <span className="next-tag" style={{ marginRight: 10 }}>{d.soon_l}</span>}{s.title[lang]} · {s.date[lang]}</div>
               <Link className="btn season-btn" href={`/${lang}/seasons/${s.slug}`}>{d.open_season}</Link>
             </div>
