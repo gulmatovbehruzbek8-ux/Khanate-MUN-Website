@@ -57,7 +57,7 @@ export default async function SeasonPage({ params }: P) {
               </div>
             </section>
             <section>
-              <h3>{d.perks_l}</h3>
+              <h3>{s.upcoming ? d.perks_up : d.perks_l}</h3>
               <ul className="list">
                 {s.perks.map((p, i) => (
                   <li key={i}>{p[lang]}</li>

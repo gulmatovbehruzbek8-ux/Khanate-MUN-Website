@@ -6,7 +6,7 @@ import { getSettings } from "@/lib/settings";
 import { getSeasons } from "@/lib/seasons";
 import Gallery from "@/components/Gallery";
 
-export const revalidate = 30;
+export const revalidate = 600;
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const lang = await getLang(params);
@@ -39,7 +39,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           </div>
         </div>
       </header>
-      {nextSeasonStart ? (
+      {nextSeasonStart && new Date(nextSeasonStart).getTime() > Date.now() ? (
         <Countdown lang={lang} dict={d} startsAt={nextSeasonStart} />
       ) : (
         <div className="cdband soon">

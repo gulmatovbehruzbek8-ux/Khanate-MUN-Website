@@ -15,7 +15,7 @@ export const DATA_TAG = "kmun-data";
 // Cached (and refreshed every 60 s, or right after an admin save) so public pages stay static and fast
 // instead of waiting on Google for every visit.
 const readSaved = unstable_cache(async () => (await getStore()?.getSettings()) ?? null, ["kmun-settings"], {
-  revalidate: 60,
+  revalidate: 3600,
   tags: [DATA_TAG],
 });
 

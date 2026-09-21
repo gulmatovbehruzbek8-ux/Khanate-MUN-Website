@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { site } from "@/content/site";
 import { getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
+import { getSeasons } from "@/lib/seasons";
 import { codeFor, normalizeCode } from "@/lib/referral";
 
 export const runtime = "nodejs";
@@ -58,7 +59,9 @@ export async function POST(req: Request) {
   }
   const settings = await getSettings();
   const fee = { key: tk.key, uzs: tk.key === "observer" ? settings.feeObserver : settings.feeDelegate };
-  const knownCommittee = site.committees.some((c) => c.body === committee) ? committee : "";
+  const upcoming = (await getSeasons()).find((s) => s.upcoming);
+  const allowed = upcoming?.committees.length ? upcoming.committees.map((c) => c.body.en) : site.committees.map((c) => c.body as string);
+  const knownCommittee = allowed.includes(committee) ? committee : "";
 
   const store = getStore();
   if (!store) {

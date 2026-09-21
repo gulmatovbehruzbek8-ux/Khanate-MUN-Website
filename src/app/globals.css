@@ -436,3 +436,14 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
 .reg form .row{grid-template-columns:1fr}
 .reg form label{font-size:14px}
 .reg form input,.reg form select{padding:14px 16px;font-size:17px}
+
+/* About page: larger, easier-to-read text */
+.about .head p{font-size:clamp(18px,2.2vw,21px);line-height:1.7;max-width:70ch}
+.about .head h2{font-size:clamp(34px,5vw,48px)}
+.about .fact b{font-size:clamp(28px,3.6vw,38px)}
+.about .fact span{font-size:16px}
+.about .com p{font-size:17px;line-height:1.65}
+.about .com h3{font-size:clamp(22px,2.6vw,26px)}
+.about .com small{font-size:13px}
+.about .more{font-size:16px}
+.about .head{max-width:72ch}

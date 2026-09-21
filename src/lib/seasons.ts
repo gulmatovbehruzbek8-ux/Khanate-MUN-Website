@@ -6,7 +6,7 @@ import { getStore } from "./store";
 
 // Saved season edits are cached for 60 s (and refreshed right after an admin save) so pages stay fast.
 const readContent = unstable_cache(async () => (await getStore()?.getContent()) ?? {}, ["kmun-content"], {
-  revalidate: 60,
+  revalidate: 3600,
   tags: [DATA_TAG],
 });
 
@@ -76,7 +76,7 @@ export const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
 
 export function isSafeImageUrl(u: string) {
-  return /^https:\/\/[^\s]+$/.test(u) || /^\/api\/media\/[A-Za-z0-9._-]+$/.test(u) || /^\/seasons\/[a-z0-9-]+\/[A-Za-z0-9._-]+$/.test(u);
+  return /^https:\/\/[^\s]+$/.test(u) || /^\/api\/media\/[A-Za-z0-9._-]+$/.test(u) || /^\/seasons\/[a-z0-9-]+\/[A-Za-z0-9._-]+$/.test(u) || /^\/team\/[A-Za-z0-9._-]+$/.test(u);
 }
 
 /** Accepts untrusted JSON and returns a clean Season, or null if it is unusable. */

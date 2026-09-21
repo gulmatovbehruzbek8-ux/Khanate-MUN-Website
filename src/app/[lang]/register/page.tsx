@@ -5,7 +5,7 @@ import { getDict, getLang } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 import { getSeasons } from "@/lib/seasons";
 
-export const revalidate = 30;
+export const revalidate = 600;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return { title: getDict(await getLang(params)).n_reg };
@@ -19,6 +19,10 @@ export default async function Register({ params }: { params: Promise<{ lang: str
   const settings = await getSettings();
   const next = (await getSeasons()).find((s) => s.upcoming);
   const nextFees = next?.fees.filter((f) => f.free || f.uzs > 0) ?? [];
+  const committees =
+    next && next.committees.length > 0
+      ? next.committees.map((c) => ({ value: c.body.en, label: c.body[lang] || c.body.en }))
+      : site.committees.map((c) => ({ value: c.body as string, label: c.body as string }));
   const nextPerks = next?.perks.filter((p) => p[lang]) ?? [];
   const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;
   return (
@@ -59,7 +63,7 @@ export default async function Register({ params }: { params: Promise<{ lang: str
             <li>{d.p3}</li>
           </ul>
         </div>
-        <RegisterForm lang={lang} dict={d} open={settings.registrationOpen} fees={{ delegate_meal: settings.feeDelegate, observer: settings.feeObserver }} />
+        <RegisterForm lang={lang} dict={d} committees={committees} open={settings.registrationOpen} fees={{ delegate_meal: settings.feeDelegate, observer: settings.feeObserver }} />
       </div>
     </section>
   );

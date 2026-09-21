@@ -4,7 +4,7 @@ import { site } from "@/content/site";
 import { getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return { title: getDict(await getLang(params)).n_about };
@@ -14,9 +14,14 @@ export default async function About({ params }: { params: Promise<{ lang: string
   const lang = await getLang(params);
   const d = getDict(lang);
   const seasons = await getSeasons();
-  const s = site.lastSeason;
+  const last = seasons.find((x) => !x.upcoming);
+  const s = {
+    dateLabel: last?.date[lang] || site.lastSeason.dateLabel,
+    city: site.lastSeason.city,
+    committeeCount: last ? last.committees.length : site.lastSeason.committeeCount,
+  };
   return (
-    <section className="inner">
+    <section className="inner about">
       <div className="wrap">
         <div className="head">
           <div className="eyebrow">{d.n_about}</div>

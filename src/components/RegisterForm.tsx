@@ -6,7 +6,7 @@ import { site } from "@/content/site";
 
 type Status = "idle" | "sending" | "ok" | "error";
 
-export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; dict: Dict; open: boolean; fees: { delegate_meal: number; observer: number } }) {
+export default function RegisterForm({ lang, dict, open, fees, committees }: { lang: Lang; dict: Dict; open: boolean; committees: { value: string; label: string }[]; fees: { delegate_meal: number; observer: number } }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState<{ name: string; telegram: string; fee: string; code: string } | null>(null);
@@ -92,10 +92,10 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
       </label>
       <label htmlFor="committee">
         <span>{dict.l_com}</span>
-        <select id="committee" name="committee" defaultValue={site.committees[0].body}>
-          {site.committees.map((c) => (
-            <option key={c.body} value={c.body}>
-              {c.body}
+        <select id="committee" name="committee" defaultValue={committees[0]?.value}>
+          {committees.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
             </option>
           ))}
         </select>
