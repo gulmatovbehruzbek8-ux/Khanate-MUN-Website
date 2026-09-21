@@ -55,13 +55,13 @@ export async function DELETE(req: Request) {
     const row = Number(body.row);
     if (!Number.isInteger(row) || row < 2) return NextResponse.json({ error: "bad_request" }, { status: 400 });
     const current = (await store.list()).find((r) => r.row === row);
-    if (!current || current.time !== body.time || current.telegram !== body.telegram) {
+    if (!current || current.time.trim() !== String(body.time ?? "").trim() || current.telegram.trim() !== String(body.telegram ?? "").trim()) {
       return NextResponse.json({ error: "changed" }, { status: 409 }); // sheet changed since the list was loaded
     }
     await store.deleteRows([row]);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[admin] delete failed", err);
-    return NextResponse.json({ error: "server" }, { status: 500 });
+    return NextResponse.json({ error: "server", detail: err instanceof Error ? err.message : String(err) }, { status: 500 });
   }
 }

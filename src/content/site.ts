@@ -37,16 +37,17 @@ export const site = {
     { body: "GA · Uzbek Committee", title: "c4", desc: "c4d" },
   ] as const,
 
-  // Season 2 team, from the channel's "Meet the Team" posts. Add last names/photos (put photos in /public/team).
+  // Team, in the order shown in the team chat. Add photos by putting them in /public/team and setting `photo`.
   team: [
-    { name: "Olloshukur", role: "Secretary-General & Founder", photo: null },
-    { name: "Ruxshona", role: "Delegate Affairs Officer", photo: null },
-    { name: "Ibrat", role: "Financier", photo: null },
-    { name: "Mohira", role: "Logistician & Session Manager", photo: null },
-    { name: "Mushtariy", role: "Logistician", photo: null },
-    { name: "Shaxrizoda", role: "Logistician", photo: null },
-    { name: "Behruz", role: "Operator (photo & media)", photo: null },
-    { name: "Islombek", role: "Designs & PR Manager", photo: null },
+    { name: "Olloshukur", role: "Founder (CEO)", photo: null },
+    { name: "Shahrizoda", role: "PR Lead", photo: null },
+    { name: "Mohira", role: "Logistics Head", photo: null },
+    { name: "Islam", role: "Designs Lead", photo: null },
+    { name: "Mushtariy Masharipova", role: "Logistician", photo: null },
+    { name: "Behruzbek Gulmatov", role: "Chief Operator", photo: null },
+    { name: "Ruxshona", role: "Delegate Affairs Officer (DAO)", photo: null },
+    { name: "Ibratbek", role: "CFO", photo: null },
+    { name: "Smdjan", role: "Logistician", photo: null },
   ] as { name: string; role: string; photo: string | null }[],
 };
 

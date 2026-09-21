@@ -8,6 +8,7 @@ export default function AdminBar({ sheetUrl }: { sheetUrl: string | null }) {
   const tabs = [
     { href: "/admin", label: "Registrations", on: path === "/admin" },
     { href: "/admin/seasons", label: "Seasons", on: path.startsWith("/admin/seasons") },
+    { href: "/admin/team", label: "Team", on: path.startsWith("/admin/team") },
   ];
 
   async function logout() {

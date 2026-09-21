@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { site } from "@/content/site";
 import { getDict, getLang } from "@/lib/i18n";
+import { getTeam } from "@/lib/team";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return { title: getDict(await getLang(params)).n_team };
@@ -15,6 +15,7 @@ const Silhouette = () => (
 
 export default async function Team({ params }: { params: Promise<{ lang: string }> }) {
   const d = getDict(await getLang(params));
+  const team = await getTeam();
   return (
     <section className="flags inner">
       <div className="wrap">
@@ -24,7 +25,7 @@ export default async function Team({ params }: { params: Promise<{ lang: string 
           <p>{d.t_p}</p>
         </div>
         <div className="team">
-          {site.team.map((p, i) => (
+          {team.map((p, i) => (
             <div className="person" key={i}>
               <div className="avatar" style={p.photo ? { overflow: "hidden" } : undefined}>
                 {p.photo ? <img src={p.photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Silhouette />}
