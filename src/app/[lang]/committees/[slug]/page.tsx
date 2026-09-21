@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findCommittee, getSeasons } from "@/lib/seasons";
-import { langs } from "@/lib/dictionaries";
+import { findCommittee } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
 import Gallery from "@/components/Gallery";
 
 type P = { params: Promise<{ lang: string; slug: string }> };
 
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  const seasons = await getSeasons();
-  return langs.flatMap((lang) => seasons.flatMap((s) => s.committees.map((c) => ({ lang, slug: c.slug }))));
-}
+// Seasons and committees are added from the admin panel, so render on demand (data is cached ~60 s inside getSeasons).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const lang = await getLang(params);
