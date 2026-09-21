@@ -7,6 +7,7 @@ import "@fontsource/plus-jakarta-sans/800.css";
 import "../globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import Motion from "@/components/Motion";
 import { langs } from "@/lib/dictionaries";
 import { getDict, getLang } from "@/lib/i18n";
 
@@ -47,6 +48,7 @@ export default async function LangLayout({
         <Nav lang={lang} dict={dict} />
         {children}
         <Footer dict={dict} lang={lang} />
+        <Motion />
       </body>
     </html>
   );

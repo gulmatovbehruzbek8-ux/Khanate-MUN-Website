@@ -32,7 +32,7 @@ export default function Countdown({ lang, dict, startsAt }: { lang: Lang; dict: 
         <div className="cdunits" role="timer" aria-label={dict.count_l}>
           {cells.map((v, i) => (
             <div key={i} className={`cdu${i === 3 ? " live" : ""}`}>
-              <b>{v}</b>
+              <b key={v}>{v}</b>
               <span>{labels[i]}</span>
             </div>
           ))}

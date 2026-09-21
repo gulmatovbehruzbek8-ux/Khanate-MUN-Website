@@ -322,3 +322,74 @@ a.com:hover{border-color:var(--accent);box-shadow:0 8px 24px rgba(20,28,58,.09)}
 .refcode h4{margin:0 0 6px;font:700 14px var(--display)}
 .refcode code{display:inline-block;font:800 22px/1.2 ui-monospace,monospace;letter-spacing:.06em;user-select:all}
 .refcode p{margin:8px 0 0;font-size:13px;color:var(--mute)}
+
+/* ---------- Motion (subtle; all of it switches off for reduced-motion users) ---------- */
+:root{--ease:cubic-bezier(.22,.7,.2,1)}
+@keyframes rise{from{opacity:0;translate:0 22px}to{opacity:1;translate:0 0}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;scale:.96;translate:0 10px}to{opacity:1;scale:1;translate:0 0}}
+@keyframes floaty{0%,100%{translate:0 0}50%{translate:0 -8px}}
+@keyframes tick{from{opacity:.25;translate:0 -.18em}to{opacity:1;translate:0 0}}
+@keyframes shake{0%,100%{translate:0}25%{translate:-5px}75%{translate:5px}}
+@keyframes shine{from{background-position:-200% 0}to{background-position:200% 0}}
+
+/* scroll reveal (classes added by Motion.tsx) */
+.rv{opacity:0}
+.rv.in{animation:rise .7s var(--ease) var(--d,0ms) both}
+
+/* hero entrance */
+.hero .eyebrow,.hero h1,.hero p.lead,.hero .cta{animation:rise .8s var(--ease) both}
+.hero .eyebrow{animation-delay:.05s}
+.hero h1{animation-delay:.15s}
+.hero p.lead{animation-delay:.28s}
+.hero .cta{animation-delay:.4s}
+.crest{animation:pop 1s var(--ease) .2s both,floaty 7s ease-in-out 1.4s infinite}
+
+/* countdown digits */
+.cdu b{animation:tick .4s var(--ease) both}
+.cdu{transition:border-color .3s,background .3s}
+.cdu.live{border-color:rgba(227,182,91,.7)}
+
+/* hover: lift */
+.tile,.com,.person,.fact{transition:transform .28s var(--ease),box-shadow .28s var(--ease),border-color .2s}
+.tile:hover,.com:hover{transform:translateY(-4px)}
+.com:hover{box-shadow:0 12px 30px rgba(20,28,58,.10);border-color:var(--accent)}
+.avatar{transition:transform .3s var(--ease)}
+.person:hover .avatar{transform:scale(1.04) rotate(-1deg)}
+.btn{transition:transform .2s var(--ease),filter .2s,box-shadow .2s,background-color .2s,border-color .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.16)}
+.btn:active{transform:translateY(0) scale(.98);box-shadow:none}
+.hero .btn:not(.ghost),.navcta{background-image:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);background-size:200% 100%;background-position:-200% 0}
+.hero .btn:not(.ghost):hover,.navcta:hover{animation:shine .9s var(--ease)}
+nav .brand img{transition:transform .4s var(--ease)}
+nav .brand:hover img{transform:rotate(-8deg) scale(1.06)}
+
+/* photos */
+.gallery img,.cover img,.cover-thumb{transition:transform .6s var(--ease)}
+.gallery .zoom-btn:hover img,.cover .zoom-btn:hover img,.gallery a:hover img{transform:scale(1.05)}
+.gallery .zoom-btn,.gallery a{overflow:hidden;transition:box-shadow .3s var(--ease),border-color .2s}
+.gallery .zoom-btn:hover,.gallery a:hover{box-shadow:0 10px 26px rgba(20,28,58,.14)}
+.lb{animation:fadein .22s ease both}
+.lb figure{animation:pop .3s var(--ease) both}
+.lb-nav,.lb-close{transition:background .2s,transform .2s}
+.lb-close:hover{transform:rotate(90deg)}
+
+/* FAQ */
+.faq details{transition:border-color .2s,box-shadow .25s}
+.faq details:hover,.faq details[open]{border-color:var(--accent)}
+.faq details[open]{box-shadow:0 8px 22px rgba(20,28,58,.07)}
+.faq details[open] p{animation:rise .35s var(--ease) both}
+
+/* forms */
+input,select{transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,124,123,.16)}
+.total b{display:inline-block;transition:transform .25s var(--ease)}
+.err{animation:shake .35s ease both}
+.done{animation:pop .5s var(--ease) both}
+.refcode{animation:pop .6s var(--ease) .25s both}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1!important}
+}
