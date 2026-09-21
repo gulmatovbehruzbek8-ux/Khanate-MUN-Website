@@ -34,9 +34,11 @@ export default async function SeasonPage({ params }: P) {
       <div className="wrap">
         <Link className="crumb" href={`/${lang}/about`}>← {d.all_seasons}</Link>
         <div className="head" style={{ marginTop: 22 }}>
+          {s.upcoming && <div className="next-tag">{d.soon_l}</div>}
           <div className="eyebrow">{s.date[lang]}</div>
           <h2>{s.title[lang]}</h2>
           <p>{s.summary[lang]}</p>
+          {s.upcoming && <Link className="btn" href={`/${lang}/register`} style={{ marginTop: 18 }}>{d.cta1}</Link>}
         </div>
 
         {s.images?.[0] && (

@@ -142,5 +142,6 @@ export function sanitizeSeason(input: unknown): Season | null {
     perks: arr(o.perks, 12).map((p) => lang(p, 300)),
     committees,
     images: images.length ? images : undefined,
+    upcoming: o.upcoming === true ? true : undefined,
   };
 }

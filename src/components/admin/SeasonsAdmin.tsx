@@ -203,6 +203,10 @@ export default function SeasonsAdmin() {
                   <input id="ed-slug" value={draft.slug} disabled={!isNew} onChange={(e) => edit((d) => { d.slug = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"); })} />
                 </label>
               </div>
+              <label className="adm-check" htmlFor="ed-upcoming">
+                <input id="ed-upcoming" type="checkbox" checked={draft.upcoming === true} onChange={(e) => edit((d) => { d.upcoming = e.target.checked || undefined; })} />
+                {" "}This is the upcoming season (shown separately and highlighted on the Seasons page)
+              </label>
               <Pair label="Title" value={draft.title} onChange={(v) => edit((d) => { d.title = v; })} />
               <Pair label="Date" value={draft.date} onChange={(v) => edit((d) => { d.date = v; })} />
               <Pair label="Venue" value={draft.venue} onChange={(v) => edit((d) => { d.venue = v; })} />

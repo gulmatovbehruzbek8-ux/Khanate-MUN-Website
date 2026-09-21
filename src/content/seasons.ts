@@ -30,6 +30,7 @@ export type Season = {
   perks: L[];
   committees: Committee[];
   images?: SeasonImage[]; // first image is the cover
+  upcoming?: boolean; // shown separately and highlighted as the next season
 };
 
 const GA: L = {

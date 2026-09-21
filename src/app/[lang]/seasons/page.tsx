@@ -13,6 +13,8 @@ export default async function Seasons({ params }: { params: Promise<{ lang: stri
   const lang = await getLang(params);
   const d = getDict(lang);
   const seasons = await getSeasons();
+  const upcoming = seasons.filter((s) => s.upcoming);
+  const past = seasons.filter((s) => !s.upcoming);
   return (
     <section className="inner">
       <div className="wrap">
@@ -20,8 +22,21 @@ export default async function Seasons({ params }: { params: Promise<{ lang: stri
           <div className="eyebrow">{d.n_seasons}</div>
           <h2>{d.seasons_h}</h2>
         </div>
+        {upcoming.length > 0 && (
+          <div className="committees next-wrap">
+            {upcoming.map((s) => (
+              <Link className="com next" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
+                {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
+                <small>{d.soon_l}</small>
+                <h3>{s.title[lang]} · {s.date[lang]}</h3>
+                <p>{s.summary[lang]}</p>
+                <span className="more">{d.view_details}</span>
+              </Link>
+            ))}
+          </div>
+        )}
         <div className="committees">
-          {seasons.map((s, i) => (
+          {past.map((s, i) => (
             <Link className="com" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
               {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
               <small>{i === 0 ? d.latest_l : d.past_l}</small>

@@ -393,3 +393,12 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
   *,*::before,*::after{animation:none!important;transition:none!important}
   .rv{opacity:1!important}
 }
+
+/* upcoming season: set apart from past ones */
+.next-wrap{margin-bottom:28px}
+.com.next{background:var(--navy);border-color:#e3b65b;border-width:2px;color:#fff;box-shadow:0 10px 30px rgba(16,24,58,.25)}
+.com.next small{color:#e3b65b}
+.com.next h3{color:#fff}
+.com.next p{color:#c9cde0}
+.com.next .more{color:#e3b65b}
+.next-tag{display:inline-block;background:#e3b65b;color:#10183a;font:800 12px var(--body);letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:5px 12px;margin-bottom:12px}
