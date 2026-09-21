@@ -5,6 +5,7 @@ import { guard } from "@/lib/auth";
 import { getSeasons, resetSeason, sanitizeSeason, saveSeason } from "@/lib/seasons";
 
 export const runtime = "nodejs";
+export const maxDuration = 45; // allow Google's script time to wake up
 
 export async function GET() {
   const denied = await guard();

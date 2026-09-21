@@ -4,17 +4,38 @@ import { rowToRegistration, STATUSES, type Registration, type Settings, type Sta
  * Store backed by a Google Apps Script web app that lives inside the Sheet.
  * Needs no Google Cloud project or card. See google-apps-script/Code.gs and the README.
  */
-export function appsScriptConfigured() {
-  return Boolean(process.env.GOOGLE_SCRIPT_URL && process.env.GOOGLE_SCRIPT_SECRET);
+/** The Web app URL, tolerant of stray spaces or quotes pasted around it. Null when it is not a usable https URL. */
+function scriptUrl(): string | null {
+  const raw = (process.env.GOOGLE_SCRIPT_URL ?? "").trim().replace(/^["']+|["']+$/g, "").trim();
+  try {
+    return new URL(raw).protocol === "https:" ? raw : null;
+  } catch {
+    return null;
+  }
 }
 
+export function appsScriptConfigured() {
+  if (!process.env.GOOGLE_SCRIPT_URL && !process.env.GOOGLE_SCRIPT_SECRET) return false;
+  if (!scriptUrl()) {
+    console.error(
+      "[store] GOOGLE_SCRIPT_URL is set but is not a valid https address. It must look like https://script.google.com/macros/s/XXXX/exec (the Web app URL from Apps Script's Deploy dialog).",
+    );
+    return false;
+  }
+  return Boolean(process.env.GOOGLE_SCRIPT_SECRET);
+}
+
+// Google's script can take 10+ seconds on the first call after being idle. Public page reads fail fast (they are
+// cached and fall back to the last good value); registrations and the admin table wait longer.
+const SLOW_OK = new Set(["append", "setStatus", "saveSettings", "setContent", "list"]);
+
 async function rawCall<T = unknown>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
-  const res = await fetch(process.env.GOOGLE_SCRIPT_URL as string, {
+  const res = await fetch(scriptUrl() as string, {
     method: "POST",
     redirect: "follow", // Apps Script answers with a redirect to the result
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ secret: process.env.GOOGLE_SCRIPT_SECRET, action, ...payload }),
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(SLOW_OK.has(action) ? 28000 : 8000),
   });
   const text = await res.text();
   let body: { ok?: boolean; data?: T; error?: string };

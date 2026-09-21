@@ -33,7 +33,10 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/registrations", { cache: "no-store" });
+      // The Google script can be slow to wake up; try once more before giving up.
+      let res = await fetch("/api/admin/registrations", { cache: "no-store" });
+      if (res.status === 401) return location.reload();
+      if (!res.ok) res = await fetch("/api/admin/registrations", { cache: "no-store" });
       if (res.status === 401) return location.reload();
       if (!res.ok) throw new Error();
       const data = await res.json();

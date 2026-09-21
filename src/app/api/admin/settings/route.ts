@@ -5,6 +5,7 @@ import { DATA_TAG, getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
+export const maxDuration = 45; // allow Google's script time to wake up
 
 export async function GET() {
   const denied = await guard();

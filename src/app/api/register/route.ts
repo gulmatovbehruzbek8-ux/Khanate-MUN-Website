@@ -4,6 +4,7 @@ import { getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
+export const maxDuration = 45; // allow Google's script time to wake up
 
 const TICKET_LABEL: Record<string, string> = {
   delegate: "Delegate",
@@ -73,7 +74,7 @@ export async function POST(req: Request) {
 
   const store = getStore();
   if (!store) {
-    console.error("[register] Google Sheets env vars are missing");
+    console.error("[register] no storage configured: check GOOGLE_SCRIPT_URL (a valid https .../exec address) and GOOGLE_SCRIPT_SECRET in Vercel");
     return NextResponse.json({ error: "server" }, { status: 500 });
   }
 
