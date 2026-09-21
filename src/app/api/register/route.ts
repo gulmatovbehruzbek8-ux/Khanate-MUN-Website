@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { site } from "@/content/site";
 import { getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
+import { notifyNewRegistration } from "@/lib/telegram";
 
 export const runtime = "nodejs";
 export const maxDuration = 45; // allow Google's script time to wake up
@@ -80,6 +81,16 @@ export async function POST(req: Request) {
 
   try {
     await store.append(row);
+    // Tell the organisers' Telegram chat (optional; never blocks or fails the registration).
+    await notifyNewRegistration({
+      name,
+      school: row[2],
+      telegram: row[3],
+      ticket: row[4],
+      fee: fee.uzs.toLocaleString("en-US").replace(/,/g, " "),
+      committee: row[6],
+      referral: row[7],
+    });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[register] failed to save registration", err);

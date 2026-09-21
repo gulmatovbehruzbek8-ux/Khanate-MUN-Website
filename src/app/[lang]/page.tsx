@@ -3,6 +3,8 @@ import Countdown from "@/components/Countdown";
 import { site } from "@/content/site";
 import { getDict, getLang } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
+import { getSeasons } from "@/lib/seasons";
+import Gallery from "@/components/Gallery";
 
 export const revalidate = 30;
 
@@ -10,6 +12,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const lang = await getLang(params);
   const d = getDict(lang);
   const { nextSeasonStart } = await getSettings();
+  const withPhotos = (await getSeasons()).find((s) => s.images && s.images.length > 0);
   const tiles = [
     { href: "about", t: d.t1, s: d.t1d },
     { href: "committees", t: d.t2, s: d.t2d },
@@ -58,6 +61,28 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+      {withPhotos && (
+        <section className="moments">
+          <div className="wrap">
+            <div className="head" style={{ marginBottom: 22 }}>
+              <div className="eyebrow">{d.moments_h} {withPhotos.title[lang]}</div>
+            </div>
+            <Gallery
+              items={withPhotos.images!.slice(0, 6).map((im) => ({ url: im.url, caption: im.caption?.[lang] }))}
+            />
+            <Link className="btn ghost" href={`/${lang}/seasons/${withPhotos.slug}`}>{d.moments_cta}</Link>
+          </div>
+        </section>
+      )}
+      <section className="qa">
+        <div className="wrap">
+          <div>
+            <h2>{d.qa_h}</h2>
+            <p>{d.qa_p}</p>
+          </div>
+          <Link className="btn" href={`/${lang}/faq`}>{d.qa_cta}</Link>
         </div>
       </section>
     </>

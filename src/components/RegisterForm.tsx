@@ -9,6 +9,7 @@ type Status = "idle" | "sending" | "ok" | "error";
 export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; dict: Dict; open: boolean; fees: { delegate_meal: number; observer: number } }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
+  const [sent, setSent] = useState<{ name: string; telegram: string; fee: string } | null>(null);
   const [ticket, setTicket] = useState<string>("delegate_meal");
   const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;
   const price = (key: string) => (key === "observer" ? fees.observer : fees.delegate_meal);
@@ -28,6 +29,7 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
       });
       const json = await res.json().catch(() => ({}));
       if (res.ok) {
+        setSent({ name: String(data.name ?? ""), telegram: String(data.telegram ?? ""), fee: fmt(price(String(data.ticket ?? ticket))) });
         setStatus("ok");
         form.reset();
         setTicket("delegate_meal");
@@ -43,6 +45,26 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
 
   if (!open) {
     return <div className="form-closed">{dict.closed}</div>;
+  }
+
+  if (status === "ok" && sent) {
+    return (
+      <div className="done" role="status">
+        <h3>{dict.ok_h}</h3>
+        <p className="sum">
+          {dict.ok_for}: {sent.name} · {sent.telegram.startsWith("@") ? sent.telegram : `@${sent.telegram}`} · {sent.fee}
+        </p>
+        <ol>
+          <li>{dict.ok_1}</li>
+          <li>{dict.ok_2}</li>
+          <li>{dict.ok_3}</li>
+        </ol>
+        <div className="cta">
+          <a className="btn" href={site.social.telegram}>{dict.ok_tg}</a>
+          <button type="button" className="btn ghost" onClick={() => { setStatus("idle"); setSent(null); }}>{dict.ok_again}</button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -89,8 +111,8 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
       </label>
       {/* Honeypot: real people never see or fill this. */}
       <div className="hp" aria-hidden="true">
-        <label htmlFor="website">Website</label>
-        <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+        <label htmlFor="hp_x9">Leave this empty</label>
+        <input id="hp_x9" name="hp_x9" type="text" tabIndex={-1} autoComplete="off" data-lpignore="true" data-1p-ignore="true" />
       </div>
       <div className="total">
         <span>{dict.total_l}</span>
@@ -99,9 +121,6 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
       <button className="btn" type="submit" disabled={status === "sending"}>
         {status === "sending" ? dict.sending : dict.submit}
       </button>
-      <div className="ok" role="status" style={{ display: status === "ok" ? "block" : "none" }}>
-        {dict.ok}
-      </div>
       {status === "error" && (
         <div className="err" role="alert">
           {message}

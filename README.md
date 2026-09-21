@@ -66,6 +66,20 @@ Use this if Google Cloud asks for a card. It is free and runs inside your Sheet.
 
 Only requests that carry the secret are accepted. If you edit `Code.gs` later, use **Deploy, Manage deployments, Edit, New version** so the change goes live.
 
+## Telegram bot (optional, free)
+
+The bot does two things: it posts every new registration into your organisers' Telegram chat, and it answers /start, /register, /prices, /date, /faq and /channel in English and Uzbek.
+
+1. In Telegram open **@BotFather**, send `/newbot`, follow the steps and copy the **token**.
+2. In Vercel add: `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_WEBHOOK_SECRET` (any long random text, letters and digits only) and `SITE_URL` (your site, for example `https://khanatemun.vercel.app`). Redeploy.
+3. Connect the bot to the site by opening this address once in your browser (fill in the three values):
+   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=<SITE>/api/telegram&secret_token=<WEBHOOK_SECRET>`
+   It should answer `"ok":true`.
+4. To get registrations posted into a group: add the bot to the organisers' group, send `/chatid` in that group, and the bot replies with a number (often starting with -100). Add it in Vercel as `TELEGRAM_CHAT_ID` and redeploy.
+5. Optional: add `TELEGRAM_BOT_URL` (for example `https://t.me/YourBotName`) to show an "Ask our Telegram bot" button on the FAQ page.
+
+The bot cannot message a registrant first (Telegram does not allow it), so applicants are still contacted by the team.
+
 ## Photo storage (free, needed for uploads on Vercel)
 
 Vercel has no permanent disk, so photos go to **Vercel Blob**:
