@@ -12,7 +12,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const lang = await getLang(params);
   const d = getDict(lang);
   const { nextSeasonStart } = await getSettings();
-  const withPhotos = (await getSeasons()).find((s) => s.images && s.images.length > 0);
+  const seasons = await getSeasons();
+  const upcoming = seasons.find((s) => s.upcoming);
+  const withPhotos = seasons.find((s) => !s.upcoming && s.images && s.images.length > 0);
   const tiles = [
     { href: "about", t: d.t1, s: d.t1d },
     { href: "committees", t: d.t2, s: d.t2d },
@@ -49,6 +51,22 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             <a className="btn" href={site.social.telegram}>{d.soon_cta}</a>
           </div>
         </div>
+      )}
+      {upcoming && (
+        <section className="next-home">
+          <div className="wrap">
+            <div className="next-card">
+              <div className="next-tag">{d.soon_l}</div>
+              <h2>{upcoming.title[lang]}{upcoming.date[lang] ? ` · ${upcoming.date[lang]}` : ""}</h2>
+              {upcoming.venue[lang] && <div className="next-venue">{upcoming.venue[lang]}</div>}
+              {upcoming.summary[lang] && <p>{upcoming.summary[lang]}</p>}
+              <div className="cta">
+                <Link className="btn" href={`/${lang}/register`}>{d.cta1}</Link>
+                <Link className="btn ghost" href={`/${lang}/seasons/${upcoming.slug}`}>{d.view_details}</Link>
+              </div>
+            </div>
+          </div>
+        </section>
       )}
       <section>
         <div className="wrap">
