@@ -35,6 +35,17 @@ export const devStore: Store = {
     r[9] = status;
     write(d);
   },
+  async deleteRows(rows: number[]) {
+    const d = read();
+    const drop = new Set(rows);
+    d.rows = d.rows.filter((_, i) => !drop.has(i + 2));
+    write(d);
+  },
+  async clearRegistrations() {
+    const d = read();
+    d.rows = [];
+    write(d);
+  },
   async getSettings() {
     return read().settings;
   },

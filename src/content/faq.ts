@@ -38,17 +38,17 @@ export const faq: { q: L; a: L }[] = [
     },
   },
   {
+    q: { en: "How does the referral system work?", uz: "Referal tizimi qanday ishlaydi?" },
+    a: {
+      en: "After you register, you get your own referral code on the confirmation screen. When a friend enters it in the registration form, you get 10 000 UZS back for each friend, up to 2 friends. The organisers see the referrals and pay you back.",
+      uz: "Ro'yxatdan o'tgach, tasdiqlash oynasida o'zingizning referal kodingizni olasiz. Do'stingiz uni ro'yxatdan o'tish formasiga kiritsa, har bir do'st uchun sizga 10 000 so'm qaytadi (2 tagacha). Tashkilotchilar referallarni ko'radi va pulni qaytaradi.",
+    },
+  },
+  {
     q: { en: "Is accommodation available for out-of-town delegates?", uz: "Boshqa shahardan kelganlar uchun turar joy bormi?" },
     a: {
       en: "In Season 2, out-of-town delegates could stay free of charge at Khiva Presidential School. Check our Telegram channel for the terms of each season.",
       uz: "2-mavsumda boshqa shahardan kelgan delegatlar Xiva Prezident maktabida bepul turishi mumkin edi. Har bir mavsum shartlari uchun Telegram kanalimizni kuzating.",
-    },
-  },
-  {
-    q: { en: "Is there a referral programme?", uz: "Referal dasturi bormi?" },
-    a: {
-      en: "Season 2 had one: 10 000 UZS back for each friend you referred, up to 2 referrals. Write the name of the person who referred you in the Referral field when you register.",
-      uz: "2-mavsumda bor edi: taklif qilgan har bir do'stingiz uchun 10 000 so'm qaytarilgan, 2 tagacha. Ro'yxatdan o'tishda sizni taklif qilgan kishining ismini Referal maydoniga yozing.",
     },
   },
   {

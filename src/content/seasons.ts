@@ -56,12 +56,11 @@ export const defaultSeasons: Season[] = [
       uz: "Xiva Prezident maktabi, Amir Temur ko'chasi, Xiva",
     },
     summary: {
-      en: "Season 2 came back reimagined: four committees, a guided tour of Itchan Qala after the sessions, free accommodation for out-of-town delegates and a referral programme.",
-      uz: "2-mavsum yangicha qaytdi: to'rtta qo'mita, sessiyalardan keyin Ichan Qal'a bo'ylab ekskursiya, boshqa shahardan kelgan delegatlar uchun bepul turar joy va referal dasturi.",
+      en: "Season 2 came back reimagined: four committees, a guided tour of Itchan Qala after the sessions free accommodation for out-of-town delegates and a referral programme.",
+      uz: "2-mavsum yangicha qaytdi: to'rtta qo'mita, sessiyalardan keyin Ichan Qal'a bo'ylab ekskursiya boshqa shahardan kelgan delegatlar uchun bepul turar joy va referal dasturi.",
     },
     fees: [
-      { label: { en: "Delegate, no meal", uz: "Delegat, ovqatsiz" }, uzs: 50000 },
-      { label: { en: "Delegate, with meal", uz: "Delegat, ovqat bilan" }, uzs: 85000 },
+      { label: { en: "Delegate", uz: "Delegat" }, uzs: 85000 },
       { label: { en: "Observer", uz: "Kuzatuvchi" }, uzs: 20000 },
     ],
     keyDates: [

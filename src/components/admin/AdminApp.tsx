@@ -5,13 +5,14 @@ import AdminBar from "./AdminBar";
 import { STATUSES, type Registration, type Settings } from "@/lib/types";
 
 const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;
-const REFERRAL_UZS = 10000;
-const REFERRAL_CAP = 2;
 
 // Tashkent is UTC+5 all year. datetime-local inputs have no timezone, so convert explicitly.
 const toInput = (iso: string | null) =>
   iso ? new Date(new Date(iso).getTime() + 5 * 3600_000).toISOString().slice(0, 16) : "";
 const fromInput = (v: string) => (v ? `${v}:00+05:00` : "");
+
+const REFERRAL_UZS = 10000;
+const REFERRAL_CAP = 2;
 
 export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
   const [rows, setRows] = useState<Registration[]>([]);
@@ -28,6 +29,9 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
   const [feeDel, setFeeDel] = useState("");
   const [feeObs, setFeeObs] = useState("");
   const [saveMsg, setSaveMsg] = useState("");
+  const [confirmRow, setConfirmRow] = useState<number | null>(null);
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,6 +80,22 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     }
   }
 
+  async function remove(body: Record<string, unknown>) {
+    setBusy(true);
+    setError("");
+    const res = await fetch("/api/admin/registrations", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }).catch(() => null);
+    setBusy(false);
+    setConfirmRow(null);
+    setConfirmAll(false);
+    if (res?.status === 409) setError("That list was out of date, so nothing was deleted. Refreshed.");
+    else if (!res?.ok) setError("Could not delete. Try again.");
+    await load();
+  }
+
   async function saveSettings() {
     setSaveMsg("Saving…");
     const res = await fetch("/api/admin/settings", {
@@ -98,7 +118,7 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     const needle = q.trim().toLowerCase();
     return rows
       .filter((r) => (!fStatus || r.status === fStatus) && (!fTicket || r.ticket === fTicket) && (!fCommittee || r.committee === fCommittee))
-      .filter((r) => !needle || [r.name, r.school, r.telegram, r.referral].join(" ").toLowerCase().includes(needle))
+      .filter((r) => !needle || [r.name, r.school, r.telegram, r.referral, r.code ?? ""].join(" ").toLowerCase().includes(needle))
       .sort((a, b) => b.row - a.row); // newest first
   }, [rows, q, fStatus, fTicket, fCommittee]);
 
@@ -119,19 +139,19 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     rows.filter((r) => r.status !== "Rejected").forEach((r) => key(r) && m.set(key(r), (m.get(key(r)) ?? 0) + 1));
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   };
+  // Referrals: who used whose code. Payback is 10 000 UZS per referral, up to 2 per referrer.
+  const referrals = useMemo(() => {
+    const byCode = new Map<string, Registration>();
+    rows.forEach((r) => r.code && byCode.set(r.code, r));
+    const m = new Map<string, Registration[]>();
+    rows.filter((r) => r.referral && r.status !== "Rejected").forEach((r) => m.set(r.referral, [...(m.get(r.referral) ?? []), r]));
+    return [...m.entries()]
+      .map(([code, friends]) => ({ code, referrer: byCode.get(code), friends, payback: Math.min(friends.length, REFERRAL_CAP) * REFERRAL_UZS }))
+      .sort((a, b) => b.friends.length - a.friends.length);
+  }, [rows]);
+
   const byTicket = tally((r) => r.ticket);
   const byCommittee = tally((r) => r.committee);
-
-  const referrals = useMemo(() => {
-    const m = new Map<string, number>();
-    rows
-      .filter((r) => r.referral && r.status !== "Rejected")
-      .forEach((r) => {
-        const k = r.referral.trim().toLowerCase();
-        m.set(k, (m.get(k) ?? 0) + 1);
-      });
-    return [...m.entries()].sort((a, b) => b[1] - a[1]);
-  }, [rows]);
 
   return (
     <div className="adm">
@@ -189,28 +209,30 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
             </div>
           </section>
 
-          <section className="adm-panel">
-            <h2>Referrals</h2>
-            {referrals.length === 0 ? (
-              <p className="adm-hint">No referral codes used yet.</p>
-            ) : (
-              <table className="adm-mini">
-                <thead>
-                  <tr><th>Referrer</th><th>Referred</th><th>To pay back</th></tr>
-                </thead>
+        </div>
+
+        <section className="adm-panel">
+          <h2>Referrals ({referrals.length})</h2>
+          {referrals.length === 0 ? (
+            <p className="adm-hint">No one has used a referral code yet.</p>
+          ) : (
+            <div className="adm-scroll">
+              <table className="adm-table">
+                <thead><tr><th>Referrer</th><th>Code</th><th>Friends who registered</th><th>To pay back</th></tr></thead>
                 <tbody>
-                  {referrals.map(([name, n]) => (
-                    <tr key={name}>
-                      <td>{name}</td>
-                      <td>{n}</td>
-                      <td>{fmt(Math.min(n, REFERRAL_CAP) * REFERRAL_UZS)}</td>
+                  {referrals.map((g) => (
+                    <tr key={g.code}>
+                      <td><b>{g.referrer ? g.referrer.name : "Unknown (deleted)"}</b> {g.referrer?.telegram}</td>
+                      <td className="nowrap">{g.code}</td>
+                      <td>{g.friends.map((f) => f.name).join(", ")}</td>
+                      <td className="nowrap">{fmt(g.payback)}{g.friends.length > REFERRAL_CAP ? " (capped)" : ""}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            )}
-          </section>
-        </div>
+            </div>
+          )}
+        </section>
 
         <section className="adm-panel">
           <div className="adm-tools">
@@ -230,6 +252,17 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
             </select>
             <button className="btn ghost" onClick={load} disabled={loading}>{loading ? "Loading…" : "Refresh"}</button>
             <a className="btn" href="/api/admin/export">Export CSV</a>
+            {rows.length > 0 &&
+              (confirmAll ? (
+                <>
+                  <button className="btn danger" onClick={() => remove({ all: true })} disabled={busy}>
+                    {busy ? "Deleting…" : `Yes, delete all ${rows.length}`}
+                  </button>
+                  <button className="btn ghost" onClick={() => setConfirmAll(false)} disabled={busy}>Cancel</button>
+                </>
+              ) : (
+                <button className="btn ghost" onClick={() => setConfirmAll(true)}>Delete all</button>
+              ))}
           </div>
 
           <div className="adm-scroll">
@@ -237,7 +270,7 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
               <thead>
                 <tr>
                   <th>Time</th><th>Name</th><th>School</th><th>Telegram</th><th>Ticket</th>
-                  <th>Fee</th><th>Committee</th><th>Referral</th><th>Status</th>
+                  <th>Fee</th><th>Committee</th><th>Referral used</th><th>Own code</th><th>Status</th><th></th>
                 </tr>
               </thead>
               <tbody>
@@ -250,7 +283,8 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
                     <td>{r.ticket}</td>
                     <td className="nowrap">{fmt(r.fee)}</td>
                     <td>{r.committee}</td>
-                    <td>{r.referral}</td>
+                    <td className="nowrap">{r.referral}</td>
+                    <td className="nowrap">{r.code}</td>
                     <td>
                       <select
                         className={`adm-status s-${r.status.toLowerCase()}`}
@@ -260,6 +294,16 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
                       >
                         {STATUSES.map((s) => <option key={s}>{s}</option>)}
                       </select>
+                    </td>
+                    <td className="nowrap">
+                      {confirmRow === r.row ? (
+                        <>
+                          <button className="btn danger" disabled={busy} onClick={() => remove({ row: r.row, time: r.time, telegram: r.telegram })}>Delete?</button>{" "}
+                          <button className="btn ghost" onClick={() => setConfirmRow(null)}>No</button>
+                        </>
+                      ) : (
+                        <button className="btn ghost" aria-label={`Delete ${r.name}`} onClick={() => setConfirmRow(r.row)}>Delete</button>
+                      )}
                     </td>
                   </tr>
                 ))}

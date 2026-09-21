@@ -31,8 +31,9 @@ Sign in with `ADMIN_PASSWORD`. You can:
 - see all registrations with search and filters (status, ticket, committee)
 - change each status: New, Accepted, Paid, Rejected (saved to the Google Sheet)
 - see totals: registrations, expected income, money collected, breakdown by ticket and committee
-- see referral counts and how much to pay back (10 000 UZS each, max 2 per person)
 - export everything as CSV
+- delete one registration or all of them (with a confirmation step). If you use the Apps Script store, re-paste `google-apps-script/Code.gs` and deploy a New version after updating
+- see referrals: every registrant gets a code (KMUN-XXXXX, derived from their Telegram handle) on the success screen; the Referrals panel shows who to pay back (10 000 UZS per friend, max 2)
 - **edit past seasons** (Seasons tab): titles, dates, venue, summary, fees, key dates, what was included, committees with agendas and chairs, all in English and Uzbek, and add a new season
 - **add photos** to a season (first photo is the cover); photos are shrunk in the browser before upload
 - **open or close registration** and **set the next season date** (this drives the homepage countdown, no redeploy needed)
@@ -65,20 +66,6 @@ Use this if Google Cloud asks for a card. It is free and runs inside your Sheet.
 6. In Vercel (or `.env.local`) set `GOOGLE_SCRIPT_URL` to that URL and `GOOGLE_SCRIPT_SECRET` to the same secret from step 3. Redeploy.
 
 Only requests that carry the secret are accepted. If you edit `Code.gs` later, use **Deploy, Manage deployments, Edit, New version** so the change goes live.
-
-## Telegram bot (optional, free)
-
-The bot does two things: it posts every new registration into your organisers' Telegram chat, and it answers /start, /register, /prices, /date, /faq and /channel in English and Uzbek.
-
-1. In Telegram open **@BotFather**, send `/newbot`, follow the steps and copy the **token**.
-2. In Vercel add: `TELEGRAM_BOT_TOKEN` (the token), `TELEGRAM_WEBHOOK_SECRET` (any long random text, letters and digits only) and `SITE_URL` (your site, for example `https://khanatemun.vercel.app`). Redeploy.
-3. Connect the bot to the site by opening this address once in your browser (fill in the three values):
-   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=<SITE>/api/telegram&secret_token=<WEBHOOK_SECRET>`
-   It should answer `"ok":true`.
-4. To get registrations posted into a group: add the bot to the organisers' group, send `/chatid` in that group, and the bot replies with a number (often starting with -100). Add it in Vercel as `TELEGRAM_CHAT_ID` and redeploy.
-5. Optional: add `TELEGRAM_BOT_URL` (for example `https://t.me/YourBotName`) to show an "Ask our Telegram bot" button on the FAQ page.
-
-The bot cannot message a registrant first (Telegram does not allow it), so applicants are still contacted by the team.
 
 ## Photo storage (free, needed for uploads on Vercel)
 

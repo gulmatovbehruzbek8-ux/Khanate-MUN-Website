@@ -10,7 +10,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function Faq({ params }: { params: Promise<{ lang: string }> }) {
   const lang = await getLang(params);
   const d = getDict(lang);
-  const bot = process.env.TELEGRAM_BOT_URL;
   return (
     <section className="inner">
       <div className="wrap">
@@ -32,7 +31,6 @@ export default async function Faq({ params }: { params: Promise<{ lang: string }
         <div className="cta">
           <a className="btn" href={site.social.telegram}>{d.contact_tg}</a>
           <a className="btn ghost" href={site.social.instagram}>{d.contact_ig}</a>
-          {bot && <a className="btn ghost" href={bot}>{d.contact_bot}</a>}
         </div>
       </div>
     </section>

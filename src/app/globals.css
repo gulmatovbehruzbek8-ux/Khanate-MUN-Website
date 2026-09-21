@@ -318,3 +318,7 @@ a.com:hover{border-color:var(--accent);box-shadow:0 8px 24px rgba(20,28,58,.09)}
 .done ol{margin:0 0 22px;padding-left:22px;display:grid;gap:8px}
 .done .cta{margin-top:0}
 .foot-links{display:flex;gap:22px;flex-wrap:wrap}
+.refcode{background:var(--bg,#faf7f0);border:1px dashed var(--gold,#e3b65b);border-radius:12px;padding:14px 16px;margin:0 0 18px}
+.refcode h4{margin:0 0 6px;font:700 14px var(--display)}
+.refcode code{display:inline-block;font:800 22px/1.2 ui-monospace,monospace;letter-spacing:.06em;user-select:all}
+.refcode p{margin:8px 0 0;font-size:13px;color:var(--mute)}

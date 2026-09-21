@@ -14,7 +14,8 @@ export type Registration = {
   ticket: string;
   fee: number;
   committee: string;
-  referral: string;
+  referral: string; // the referral code this person entered (someone else's code)
+  code?: string; // this person's own referral code (added by the admin API)
   lang: string;
   status: string;
 };
@@ -31,6 +32,10 @@ export interface Store {
   append(row: string[]): Promise<void>;
   list(): Promise<Registration[]>;
   setStatus(row: number, status: Status): Promise<void>;
+  /** Deletes registrations by spreadsheet row number. */
+  deleteRows(rows: number[]): Promise<void>;
+  /** Deletes every registration (keeps the header row). */
+  clearRegistrations(): Promise<void>;
   getSettings(): Promise<Settings | null>;
   saveSettings(s: Settings): Promise<void>;
   /** Small key/value documents edited from the admin panel (e.g. season details as JSON). */

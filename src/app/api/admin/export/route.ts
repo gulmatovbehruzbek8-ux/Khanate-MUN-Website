@@ -1,5 +1,6 @@
 import { guard } from "@/lib/auth";
 import { getStore, HEADERS } from "@/lib/store";
+import { codeFor } from "@/lib/referral";
 
 export const runtime = "nodejs";
 
@@ -17,9 +18,9 @@ export async function GET() {
   const store = getStore();
   if (!store) return new Response("No store configured", { status: 500 });
   const rows = await store.list();
-  const lines = [HEADERS.map((h) => cell(h)).join(",")].concat(
+  const lines = [[...HEADERS, "Own code"].map((h) => cell(h)).join(",")].concat(
     rows.map((r) =>
-      [r.time, r.name, r.school, r.telegram, r.ticket, r.fee, r.committee, r.referral, r.lang, r.status]
+      [r.time, r.name, r.school, r.telegram, r.ticket, r.fee, r.committee, r.referral, r.lang, r.status, codeFor(r.telegram)]
         .map((v, i) => cell(v, i === 3))
         .join(","),
     ),

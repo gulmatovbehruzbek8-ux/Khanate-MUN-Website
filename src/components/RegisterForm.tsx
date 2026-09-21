@@ -9,7 +9,7 @@ type Status = "idle" | "sending" | "ok" | "error";
 export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; dict: Dict; open: boolean; fees: { delegate_meal: number; observer: number } }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState<{ name: string; telegram: string; fee: string } | null>(null);
+  const [sent, setSent] = useState<{ name: string; telegram: string; fee: string; code: string } | null>(null);
   const [ticket, setTicket] = useState<string>("delegate_meal");
   const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;
   const price = (key: string) => (key === "observer" ? fees.observer : fees.delegate_meal);
@@ -29,13 +29,13 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
       });
       const json = await res.json().catch(() => ({}));
       if (res.ok) {
-        setSent({ name: String(data.name ?? ""), telegram: String(data.telegram ?? ""), fee: fmt(price(String(data.ticket ?? ticket))) });
+        setSent({ name: String(data.name ?? ""), telegram: String(data.telegram ?? ""), fee: fmt(price(String(data.ticket ?? ticket))), code: String(json.code ?? "") });
         setStatus("ok");
         form.reset();
         setTicket("delegate_meal");
       } else {
         setStatus("error");
-        setMessage(json.error === "fields" ? dict.err_fields : json.error === "closed" ? dict.closed : dict.err_generic);
+        setMessage(json.error === "fields" ? dict.err_fields : json.error === "bad_referral" ? dict.err_ref : json.error === "closed" ? dict.closed : dict.err_generic);
       }
     } catch {
       setStatus("error");
@@ -54,6 +54,13 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
         <p className="sum">
           {dict.ok_for}: {sent.name} · {sent.telegram.startsWith("@") ? sent.telegram : `@${sent.telegram}`} · {sent.fee}
         </p>
+        {sent.code && (
+          <div className="refcode">
+            <h4>{dict.ok_code_h}</h4>
+            <code>{sent.code}</code>
+            <p>{dict.ok_code_p}</p>
+          </div>
+        )}
         <ol>
           <li>{dict.ok_1}</li>
           <li>{dict.ok_2}</li>
@@ -79,16 +86,10 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
           <input id="school" name="school" maxLength={120} />
         </label>
       </div>
-      <div className="row">
-        <label htmlFor="telegram">
-          <span>{dict.l_tg}</span>
-          <input id="telegram" name="telegram" required maxLength={64} placeholder="@username" />
-        </label>
-        <label htmlFor="referral">
-          <span>{dict.l_ref}</span>
-          <input id="referral" name="referral" maxLength={40} />
-        </label>
-      </div>
+      <label htmlFor="telegram">
+        <span>{dict.l_tg}</span>
+        <input id="telegram" name="telegram" required maxLength={64} placeholder="@username" />
+      </label>
       <label htmlFor="committee">
         <span>{dict.l_com}</span>
         <select id="committee" name="committee" defaultValue={site.committees[0].body}>
@@ -108,6 +109,10 @@ export default function RegisterForm({ lang, dict, open, fees }: { lang: Lang; d
             </option>
           ))}
         </select>
+      </label>
+      <label htmlFor="referral">
+        <span>{dict.l_ref}</span>
+        <input id="referral" name="referral" maxLength={40} placeholder="KMUN-XXXXX" />
       </label>
       {/* Honeypot: real people never see or fill this. */}
       <div className="hp" aria-hidden="true">

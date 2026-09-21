@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { site } from "@/content/site";
 import { getSettings } from "@/lib/settings";
 import { getStore } from "@/lib/store";
-import { notifyNewRegistration } from "@/lib/telegram";
+import { codeFor, normalizeCode } from "@/lib/referral";
 
 export const runtime = "nodejs";
 export const maxDuration = 45; // allow Google's script time to wake up
@@ -60,6 +60,30 @@ export async function POST(req: Request) {
   const fee = { key: tk.key, uzs: tk.key === "observer" ? settings.feeObserver : settings.feeDelegate };
   const knownCommittee = site.committees.some((c) => c.body === committee) ? committee : "";
 
+  const store = getStore();
+  if (!store) {
+    console.error("[register] no storage configured: check GOOGLE_SCRIPT_URL (a valid https .../exec address) and GOOGLE_SCRIPT_SECRET in Vercel");
+    return NextResponse.json({ error: "server" }, { status: 500 });
+  }
+
+  // Referral: must be another registrant's code.
+  const ownCode = codeFor(telegram);
+  let referral = "";
+  const entered = clean(body.referral, 40);
+  if (entered) {
+    referral = normalizeCode(entered);
+    let valid = false;
+    if (referral !== ownCode) {
+      try {
+        valid = (await store.list()).some((r) => r.telegram && codeFor(r.telegram) === referral);
+      } catch (err) {
+        console.error("[register] could not check referral", err);
+        return NextResponse.json({ error: "server" }, { status: 500 });
+      }
+    }
+    if (!valid) return NextResponse.json({ error: "bad_referral" }, { status: 400 });
+  }
+
   const row = [
     new Date().toLocaleString("sv-SE", { timeZone: "Asia/Tashkent" }), // A: time (Tashkent)
     name, // B
@@ -68,30 +92,14 @@ export async function POST(req: Request) {
     TICKET_LABEL[fee.key], // E
     String(fee.uzs), // F
     knownCommittee, // G
-    clean(body.referral, 40), // H
+    referral, // H: referral code the person used
     clean(body.lang, 2), // I
     "New", // J: status (organisers edit this in the sheet)
   ];
 
-  const store = getStore();
-  if (!store) {
-    console.error("[register] no storage configured: check GOOGLE_SCRIPT_URL (a valid https .../exec address) and GOOGLE_SCRIPT_SECRET in Vercel");
-    return NextResponse.json({ error: "server" }, { status: 500 });
-  }
-
   try {
     await store.append(row);
-    // Tell the organisers' Telegram chat (optional; never blocks or fails the registration).
-    await notifyNewRegistration({
-      name,
-      school: row[2],
-      telegram: row[3],
-      ticket: row[4],
-      fee: fee.uzs.toLocaleString("en-US").replace(/,/g, " "),
-      committee: row[6],
-      referral: row[7],
-    });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, code: ownCode });
   } catch (err) {
     console.error("[register] failed to save registration", err);
     return NextResponse.json({ error: "server" }, { status: 500 });

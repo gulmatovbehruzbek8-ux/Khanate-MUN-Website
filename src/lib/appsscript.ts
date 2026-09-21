@@ -27,7 +27,7 @@ export function appsScriptConfigured() {
 
 // Google's script can take 10+ seconds on the first call after being idle. Public page reads fail fast (they are
 // cached and fall back to the last good value); registrations and the admin table wait longer.
-const SLOW_OK = new Set(["append", "setStatus", "saveSettings", "setContent", "list"]);
+const SLOW_OK = new Set(["append", "setStatus", "saveSettings", "setContent", "list", "deleteRows", "clearRegistrations"]);
 
 async function rawCall<T = unknown>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
   const res = await fetch(scriptUrl() as string, {
@@ -54,8 +54,9 @@ async function call<T = unknown>(action: string, payload: Record<string, unknown
     return await rawCall<T>(action, payload);
   } catch (err) {
     const timedOut = err instanceof Error && err.name === "TimeoutError";
-    if (!timedOut && action !== "append" && action !== "setStatus" && action !== "saveSettings" && action !== "setContent") {
-      return rawCall<T>(action, payload); // reads are safe to repeat; writes are not
+    const isRead = action === "getSettings" || action === "getContent" || action === "list";
+    if (!timedOut && isRead) {
+      return rawCall<T>(action, payload); // reads are safe to repeat; writes and deletes are not
     }
     throw err;
   }
@@ -103,6 +104,14 @@ export const appsScriptStore: Store = {
   async setStatus(row: number, status: Status) {
     if (!Number.isInteger(row) || row < 2 || !STATUSES.includes(status)) throw new Error("Bad input");
     await call("setStatus", { row, status });
+  },
+
+  async deleteRows(rows: number[]) {
+    await call("deleteRows", { rows });
+  },
+
+  async clearRegistrations() {
+    await call("clearRegistrations");
   },
 
   async getSettings(): Promise<Settings | null> {

@@ -17,6 +17,10 @@ function doPost(e) {
     const req = JSON.parse(e.postData.contents);
     const secret = PropertiesService.getScriptProperties().getProperty("SECRET");
     if (!secret || req.secret !== secret) return json_({ ok: false, error: "unauthorized" });
+    // Reads run in parallel and fast; only writes take the lock.
+    if (req.action === "list" || req.action === "getSettings" || req.action === "getContent") {
+      return json_({ ok: true, data: handle_(req) });
+    }
     const lock = LockService.getScriptLock();
     lock.waitLock(20000);
     try {
@@ -47,6 +51,19 @@ function handle_(req) {
       if (STATUSES.indexOf(req.status) < 0 || !(req.row >= 2)) throw new Error("bad input");
       const sh = tab_(REG, HEADERS);
       sh.getRange(req.row, 10).setNumberFormat("@").setValue(req.status);
+      return null;
+    }
+    case "deleteRows": {
+      const sh = tab_(REG, HEADERS);
+      req.rows.slice().sort(function (a, b) { return b - a; }).forEach(function (r) {
+        if (r >= 2 && r <= sh.getLastRow()) sh.deleteRow(r); // bottom first so row numbers stay valid
+      });
+      return null;
+    }
+    case "clearRegistrations": {
+      const sh = tab_(REG, HEADERS);
+      const n = sh.getLastRow() - 1;
+      if (n > 0) sh.deleteRows(2, n);
       return null;
     }
     case "getSettings":

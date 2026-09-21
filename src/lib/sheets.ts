@@ -74,6 +74,15 @@ function ensureTabs() {
   return ready;
 }
 
+async function regSheetId(): Promise<number> {
+  const meta = await api<{ sheets: { properties: { sheetId: number; title: string } }[] }>(
+    `${base()}?fields=sheets.properties(sheetId,title)`,
+  );
+  const found = meta.sheets.find((s) => s.properties.title === regTab());
+  if (!found) throw new Error("Registrations tab not found");
+  return found.properties.sheetId;
+}
+
 export const sheetsStore: Store = {
   kind: "sheets",
 
@@ -125,6 +134,35 @@ export const sheetsStore: Store = {
           ["feeDelegate", String(s.feeDelegate)],
           ["feeObserver", String(s.feeObserver)],
         ],
+      }),
+    });
+  },
+
+  async deleteRows(rows: number[]) {
+    const clean = [...new Set(rows)].filter((r) => Number.isInteger(r) && r >= 2).sort((a, b) => b - a); // bottom first so numbers stay valid
+    if (!clean.length) return;
+    await ensureTabs();
+    const sheetId = await regSheetId();
+    await api(`${base()}:batchUpdate`, {
+      method: "POST",
+      body: JSON.stringify({
+        requests: clean.map((r) => ({
+          deleteDimension: { range: { sheetId, dimension: "ROWS", startIndex: r - 1, endIndex: r } },
+        })),
+      }),
+    });
+  },
+
+  async clearRegistrations() {
+    await ensureTabs();
+    const data = await api<{ values?: string[][] }>(`${base()}/values/${range(regTab(), "A2:A")}`);
+    const n = data.values?.length ?? 0;
+    if (!n) return;
+    const sheetId = await regSheetId();
+    await api(`${base()}:batchUpdate`, {
+      method: "POST",
+      body: JSON.stringify({
+        requests: [{ deleteDimension: { range: { sheetId, dimension: "ROWS", startIndex: 1, endIndex: n + 1 } } }],
       }),
     });
   },
