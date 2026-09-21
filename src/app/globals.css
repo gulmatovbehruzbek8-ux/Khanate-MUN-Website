@@ -410,3 +410,12 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
 .next-venue{color:#e3b65b;font-weight:700;margin-bottom:10px}
 .next-card .btn{background:#e3b65b;color:#10183a}
 .next-card .btn.ghost{background:none;color:#fff;border:1px solid rgba(255,255,255,.4)}
+
+/* make the upcoming-season card full width and inviting */
+.next-wrap{grid-template-columns:1fr !important}
+.com.next{padding:clamp(28px,4vw,48px);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.com.next:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(16,24,58,.35)}
+.com.next h3{font-size:clamp(26px,3.6vw,38px);margin:10px 0 10px}
+.com.next p{font-size:17px;max-width:64ch}
+.com.next .more{display:inline-block;margin-top:18px;background:#e3b65b;color:#10183a;font-weight:800;font-size:17px;padding:14px 28px;border-radius:10px}
+.com.next:hover .more{filter:brightness(1.06)}
