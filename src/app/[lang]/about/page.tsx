@@ -27,6 +27,8 @@ export default async function About({ params }: { params: Promise<{ lang: string
           <div className="eyebrow">{d.n_about}</div>
           <h2>{d.a_h}</h2>
           <p>{d.a_p}</p>
+          <p>{d.a_p2}</p>
+          <p>{d.a_p3}</p>
         </div>
         <div className="facts">
           <div className="fact"><b>{s.dateLabel}</b><span>{d.f1}</span></div>

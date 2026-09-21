@@ -447,3 +447,4 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
 .about .com small{font-size:13px}
 .about .more{font-size:16px}
 .about .head{max-width:72ch}
+.about .head p+p{margin-top:16px}
