@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   return { title: getDict(await getLang(params)).n_reg };
 }
 
-const feeLabel = { delegate: "fee1", delegate_meal: "fee2", observer: "fee3" } as const;
+const feeLabel = { delegate: "fee1", delegate_meal: "fee2" } as const;
 
 export default async function Register({ params }: { params: Promise<{ lang: string }> }) {
   const lang = await getLang(params);
@@ -46,7 +46,7 @@ export default async function Register({ params }: { params: Promise<{ lang: str
                 : site.fees.map((f) => (
                     <tr key={f.key}>
                       <td>{d[feeLabel[f.key]]}</td>
-                      <td>{fmt(f.key === "observer" ? settings.feeObserver : settings.feeDelegate)}</td>
+                      <td>{fmt(settings.feeDelegate)}</td>
                     </tr>
                   ))}
             </tbody>
@@ -63,7 +63,7 @@ export default async function Register({ params }: { params: Promise<{ lang: str
             <li>{d.p3}</li>
           </ul>
         </div>
-        <RegisterForm lang={lang} dict={d} committees={committees} open={settings.registrationOpen} fees={{ delegate_meal: settings.feeDelegate, observer: settings.feeObserver }} />
+        <RegisterForm lang={lang} dict={d} committees={committees} open={settings.registrationOpen} fees={{ delegate_meal: settings.feeDelegate }} />
       </div>
     </section>
   );

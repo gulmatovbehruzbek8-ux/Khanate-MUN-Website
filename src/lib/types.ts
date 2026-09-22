@@ -24,7 +24,6 @@ export type Settings = {
   nextSeasonStart: string | null;
   registrationOpen: boolean;
   feeDelegate: number; // UZS
-  feeObserver: number; // UZS
 };
 
 export interface Store {

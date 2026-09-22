@@ -33,8 +33,8 @@ export const faq: { q: L; a: L }[] = [
   {
     q: { en: "How much does it cost?", uz: "Narxi qancha?" },
     a: {
-      en: "There are two tickets: Delegate and Observer. The current prices are shown on the Register page, together with your total before you submit.",
-      uz: "Ikki xil chipta bor: Delegat va Kuzatuvchi. Joriy narxlar Ro'yxatdan o'tish sahifasida, yuborishdan oldin umumiy summa bilan ko'rsatiladi.",
+      en: "There is one ticket: Delegate. The current price is shown on the Register page, together with your total before you submit.",
+      uz: "Bitta chipta turi bor: Delegat. Joriy narx Ro'yxatdan o'tish sahifasida, yuborishdan oldin umumiy summa bilan ko'rsatiladi.",
     },
   },
   {

@@ -29,15 +29,14 @@ export async function PUT(req: Request) {
   const registrationOpen = body.registrationOpen === true;
   const fee = (v: unknown) => Math.round(Number(v));
   const feeDelegate = fee(body.feeDelegate);
-  const feeObserver = fee(body.feeObserver);
   const badFee = (n: number) => !Number.isFinite(n) || n < 0 || n > 100_000_000;
-  if (badFee(feeDelegate) || badFee(feeObserver)) return NextResponse.json({ error: "bad_fee" }, { status: 400 });
+  if (badFee(feeDelegate)) return NextResponse.json({ error: "bad_fee" }, { status: 400 });
 
   try {
-    await store.saveSettings({ nextSeasonStart: start, registrationOpen, feeDelegate, feeObserver });
+    await store.saveSettings({ nextSeasonStart: start, registrationOpen, feeDelegate });
     revalidateTag(DATA_TAG, { expire: 0 });
     revalidatePath("/", "layout"); // refresh the public pages right away
-    return NextResponse.json({ ok: true, nextSeasonStart: start, registrationOpen, feeDelegate, feeObserver });
+    return NextResponse.json({ ok: true, nextSeasonStart: start, registrationOpen, feeDelegate });
   } catch (err) {
     console.error("[admin] saving settings failed", err);
     return NextResponse.json({ error: "server" }, { status: 500 });

@@ -27,7 +27,6 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
   const [start, setStart] = useState("");
   const [open, setOpen] = useState(false);
   const [feeDel, setFeeDel] = useState("");
-  const [feeObs, setFeeObs] = useState("");
   const [saveMsg, setSaveMsg] = useState("");
   const [confirmRow, setConfirmRow] = useState<number | null>(null);
   const [confirmAll, setConfirmAll] = useState(false);
@@ -61,7 +60,6 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
         setStart(toInput(s.nextSeasonStart));
         setOpen(s.registrationOpen);
         setFeeDel(String(s.feeDelegate));
-        setFeeObs(String(s.feeObserver));
       })
       .catch(() => {});
   }, [load]);
@@ -104,11 +102,11 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
     const res = await fetch("/api/admin/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nextSeasonStart: fromInput(start), registrationOpen: open, feeDelegate: Number(feeDel), feeObserver: Number(feeObs) }),
+      body: JSON.stringify({ nextSeasonStart: fromInput(start), registrationOpen: open, feeDelegate: Number(feeDel) }),
     }).catch(() => null);
     if (res?.ok) {
       setSaveMsg("Saved. The public site updates within a minute.");
-      setSettings({ nextSeasonStart: fromInput(start) || null, registrationOpen: open, feeDelegate: Number(feeDel), feeObserver: Number(feeObs) });
+      setSettings({ nextSeasonStart: fromInput(start) || null, registrationOpen: open, feeDelegate: Number(feeDel) });
     } else {
       setSaveMsg("Could not save. Try again.");
     }
@@ -192,10 +190,6 @@ export default function AdminApp({ sheetUrl }: { sheetUrl: string | null }) {
             <label htmlFor="fd">
               <span>Delegate price (UZS)</span>
               <input id="fd" type="number" min="0" step="1000" value={feeDel} onChange={(e) => setFeeDel(e.target.value)} />
-            </label>
-            <label htmlFor="fo">
-              <span>Observer price (UZS)</span>
-              <input id="fo" type="number" min="0" step="1000" value={feeObs} onChange={(e) => setFeeObs(e.target.value)} />
             </label>
             <p className="adm-hint">These prices appear on the registration page and form, and are saved with each registration.</p>
             <div className="adm-row">

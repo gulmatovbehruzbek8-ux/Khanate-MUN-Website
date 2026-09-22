@@ -119,20 +119,18 @@ export const sheetsStore: Store = {
       nextSeasonStart: map.get("nextSeasonStart") || null,
       registrationOpen: map.get("registrationOpen") === "true",
       feeDelegate: num("feeDelegate"), // NaN when missing; getSettings() falls back to the default
-      feeObserver: num("feeObserver"),
     };
   },
 
   async saveSettings(s) {
     await ensureTabs();
-    await api(`${base()}/values/${range(SETTINGS_TAB, "A2:B5")}?valueInputOption=RAW`, {
+    await api(`${base()}/values/${range(SETTINGS_TAB, "A2:B4")}?valueInputOption=RAW`, {
       method: "PUT",
       body: JSON.stringify({
         values: [
           ["nextSeasonStart", s.nextSeasonStart ?? ""],
           ["registrationOpen", String(s.registrationOpen)],
           ["feeDelegate", String(s.feeDelegate)],
-          ["feeObserver", String(s.feeObserver)],
         ],
       }),
     });

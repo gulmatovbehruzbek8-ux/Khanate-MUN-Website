@@ -6,14 +6,14 @@ import { site } from "@/content/site";
 
 type Status = "idle" | "sending" | "ok" | "error";
 
-export default function RegisterForm({ lang, dict, open, fees, committees }: { lang: Lang; dict: Dict; open: boolean; committees: { value: string; label: string }[]; fees: { delegate_meal: number; observer: number } }) {
+export default function RegisterForm({ lang, dict, open, fees, committees }: { lang: Lang; dict: Dict; open: boolean; committees: { value: string; label: string }[]; fees: { delegate_meal: number } }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState<{ name: string; telegram: string; fee: string; code: string } | null>(null);
   const [ticket, setTicket] = useState<string>("delegate_meal");
   const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;
-  const price = (key: string) => (key === "observer" ? fees.observer : fees.delegate_meal);
-  const label: Record<string, string> = { delegate: dict.o_del, delegate_meal: dict.o_meal, observer: dict.o_obs };
+  const price = () => fees.delegate_meal;
+  const label: Record<string, string> = { delegate: dict.o_del, delegate_meal: dict.o_meal };
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default function RegisterForm({ lang, dict, open, fees, committees }: { l
       });
       const json = await res.json().catch(() => ({}));
       if (res.ok) {
-        setSent({ name: String(data.name ?? ""), telegram: String(data.telegram ?? ""), fee: fmt(price(String(data.ticket ?? ticket))), code: String(json.code ?? "") });
+        setSent({ name: String(data.name ?? ""), telegram: String(data.telegram ?? ""), fee: fmt(price()), code: String(json.code ?? "") });
         setStatus("ok");
         form.reset();
         setTicket("delegate_meal");
@@ -105,7 +105,7 @@ export default function RegisterForm({ lang, dict, open, fees, committees }: { l
         <select id="ticket" name="ticket" value={ticket} onChange={(e) => setTicket(e.target.value)}>
           {site.fees.map((f) => (
             <option key={f.key} value={f.key}>
-              {label[f.key]} · {fmt(price(f.key))}
+              {label[f.key]} · {fmt(price())}
             </option>
           ))}
         </select>
@@ -121,7 +121,7 @@ export default function RegisterForm({ lang, dict, open, fees, committees }: { l
       </div>
       <div className="total">
         <span>{dict.total_l}</span>
-        <b>{fmt(price(ticket))}</b>
+        <b>{fmt(price())}</b>
       </div>
       <button className="btn" type="submit" disabled={status === "sending"}>
         {status === "sending" ? dict.sending : dict.submit}

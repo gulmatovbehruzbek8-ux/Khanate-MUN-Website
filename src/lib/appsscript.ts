@@ -122,7 +122,6 @@ export const appsScriptStore: Store = {
       nextSeasonStart: map.nextSeasonStart || null,
       registrationOpen: map.registrationOpen === "true",
       feeDelegate: num("feeDelegate"), // NaN when missing; getSettings() falls back to the default
-      feeObserver: num("feeObserver"),
     };
   },
 
@@ -133,7 +132,6 @@ export const appsScriptStore: Store = {
         nextSeasonStart: s.nextSeasonStart ?? "",
         registrationOpen: String(s.registrationOpen),
         feeDelegate: String(s.feeDelegate),
-        feeObserver: String(s.feeObserver),
       },
     });
   },

@@ -7,7 +7,6 @@ export const defaultSettings = (): Settings => ({
   nextSeasonStart: site.nextSeason.startsAt,
   registrationOpen: site.nextSeason.registrationOpen,
   feeDelegate: site.fees[0].uzs,
-  feeObserver: site.fees[1].uzs,
 });
 
 export const DATA_TAG = "kmun-data";
@@ -27,7 +26,7 @@ export async function getSettings(): Promise<Settings> {
     const d = defaultSettings();
     // Older saved settings have no prices yet: fall back to the defaults for those.
     const fee = (v: unknown, fb: number) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : fb);
-    return { ...saved, feeDelegate: fee(saved.feeDelegate, d.feeDelegate), feeObserver: fee(saved.feeObserver, d.feeObserver) };
+    return { ...saved, feeDelegate: fee(saved.feeDelegate, d.feeDelegate) };
   } catch (err) {
     console.error("[settings] could not read saved settings, using defaults", err);
     return defaultSettings();

@@ -11,7 +11,6 @@ export const maxDuration = 45; // allow Google's script time to wake up
 const TICKET_LABEL: Record<string, string> = {
   delegate: "Delegate",
   delegate_meal: "Delegate",
-  observer: "Observer",
 };
 
 // Best-effort rate limit (per server instance): 5 submissions per IP per 10 minutes.
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "fields" }, { status: 400 });
   }
   const settings = await getSettings();
-  const fee = { key: tk.key, uzs: tk.key === "observer" ? settings.feeObserver : settings.feeDelegate };
+  const fee = { key: tk.key, uzs: settings.feeDelegate };
   const upcoming = (await getSeasons()).find((s) => s.upcoming);
   const allowed = upcoming?.committees.length ? upcoming.committees.map((c) => c.body.en) : site.committees.map((c) => c.body as string);
   const knownCommittee = allowed.includes(committee) ? committee : "";
