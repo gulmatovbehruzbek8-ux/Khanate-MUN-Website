@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { defaultSeasons, type Chair, type Committee, type L, type Season } from "@/content/seasons";
+import { sanitizeFocus } from "@/lib/focus";
 import { DATA_TAG } from "./settings";
 import { getStore } from "./store";
 
@@ -102,7 +103,7 @@ export function sanitizeSeason(input: unknown): Season | null {
     const cimages = arr(c.images, 20)
       .map((raw) => rec(raw))
       .filter((im) => isSafeImageUrl(str(im.url, 600)))
-      .map((im) => ({ url: str(im.url, 600) }));
+      .map((im) => ({ url: str(im.url, 600), focus: sanitizeFocus(im.focus) }));
     return {
       slug: cslug,
       images: cimages.length ? cimages : undefined,
@@ -128,7 +129,7 @@ export function sanitizeSeason(input: unknown): Season | null {
   const images = arr(o.images, 40)
     .map((raw) => rec(raw))
     .filter((im) => isSafeImageUrl(str(im.url, 600)))
-    .map((im) => ({ url: str(im.url, 600), caption: optLang(im.caption, 200) }));
+    .map((im) => ({ url: str(im.url, 600), caption: optLang(im.caption, 200), focus: sanitizeFocus(im.focus) }));
 
   return {
     slug,

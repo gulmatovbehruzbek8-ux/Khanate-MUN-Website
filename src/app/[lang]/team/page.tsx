@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getDict, getLang } from "@/lib/i18n";
 import { getTeam } from "@/lib/team";
+import { focusStyle } from "@/lib/focus";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return { title: getDict(await getLang(params)).n_team };
@@ -28,7 +29,7 @@ export default async function Team({ params }: { params: Promise<{ lang: string 
           {team.map((p, i) => (
             <div className="person" key={i}>
               <div className="avatar" style={p.photo ? { overflow: "hidden" } : undefined}>
-                {p.photo ? <img src={p.photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <Silhouette />}
+                {p.photo ? <img src={p.photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", ...focusStyle(p.focus) }} /> : <Silhouette />}
               </div>
               <b>{p.name}</b>
               <span>{p.role}</span>

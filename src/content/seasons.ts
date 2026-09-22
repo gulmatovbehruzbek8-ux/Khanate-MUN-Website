@@ -2,11 +2,13 @@
  * Past and current conferences. Facts come from the official Telegram channel.
  * Every visible string is { en, uz }. Add a new season by copying an entry.
  */
+import type { Focus } from "@/lib/focus";
+
 export type L = { en: string; uz: string };
 
 export type Chair = { role: "head" | "co"; name: string };
 
-export type SeasonImage = { url: string; caption?: L };
+export type SeasonImage = { url: string; caption?: L; focus?: Focus };
 
 export type Committee = {
   slug: string;

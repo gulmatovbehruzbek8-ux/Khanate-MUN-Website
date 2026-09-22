@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { focusStyle, type Focus } from "@/lib/focus";
 
-export type GalleryItem = { url: string; caption?: string };
+export type GalleryItem = { url: string; caption?: string; focus?: Focus };
 
 /** Opens the viewer at `index`. Used by the cover image, which lives outside the grid. */
 export function CoverImage({ item, index = 0 }: { item: GalleryItem; index?: number }) {
@@ -13,7 +14,7 @@ export function CoverImage({ item, index = 0 }: { item: GalleryItem; index?: num
       aria-label={item.caption || "Open photo"}
       onClick={() => window.dispatchEvent(new CustomEvent("kmun-open", { detail: index }))}
     >
-      <img src={item.url} alt={item.caption || ""} />
+      <img src={item.url} alt={item.caption || ""} style={focusStyle(item.focus)} />
     </button>
   );
 }
@@ -54,7 +55,7 @@ export default function Gallery({ items, from = 0, closeLabel = "Close" }: { ite
       <div className="gallery">
         {items.slice(from).map((im, k) => (
           <button type="button" className="zoom-btn" key={im.url + k} onClick={() => setOpen(from + k)} aria-label={im.caption || "Open photo"}>
-            <img src={im.url} alt={im.caption || ""} loading="lazy" />
+            <img src={im.url} alt={im.caption || ""} loading="lazy" style={focusStyle(im.focus)} />
             {im.caption && <span>{im.caption}</span>}
           </button>
         ))}

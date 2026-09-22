@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { Chair, Committee, L, Season, SeasonImage } from "@/content/seasons";
+import FocusPicker from "./FocusPicker";
 
 const blankL = (): L => ({ en: "", uz: "" });
 
@@ -48,6 +49,7 @@ export default function SeasonsAdmin() {
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [openPicker, setOpenPicker] = useState<string | null>(null);
 
   async function load(selectSlug?: string) {
     const res = await fetch("/api/admin/seasons", { cache: "no-store" });
@@ -223,16 +225,25 @@ export default function SeasonsAdmin() {
               <div className="ed-photos">
                 {(draft.images ?? []).map((im: SeasonImage, i: number) => (
                   <div className="ed-photo" key={im.url + i}>
-                    <img src={im.url} alt="" />
+                    <img src={im.url} alt="" style={{ objectPosition: im.focus ? `${im.focus.x}% ${im.focus.y}%` : undefined }} />
                     {i === 0 && <span className="pill">Cover</span>}
                     <input aria-label="Caption in English" placeholder="Caption (EN)" value={im.caption?.en ?? ""} onChange={(e) => edit((d) => { const c = d.images![i]; c.caption = { en: e.target.value, uz: c.caption?.uz ?? "" }; })} />
                     <input aria-label="Caption in Uzbek" placeholder="Caption (UZ)" value={im.caption?.uz ?? ""} onChange={(e) => edit((d) => { const c = d.images![i]; c.caption = { en: c.caption?.en ?? "", uz: e.target.value }; })} />
                     <div className="ed-btns">
                       {i !== 0 && <button type="button" className="ed-cover" onClick={() => edit((d) => { const [x] = d.images!.splice(i, 1); d.images!.unshift(x); })}>★ Make cover</button>}
+                      <button type="button" onClick={() => setOpenPicker(openPicker === `s-${i}` ? null : `s-${i}`)}>{openPicker === `s-${i}` ? "Close" : "Adjust crop"}</button>
                       <button type="button" disabled={i === 0} onClick={() => edit((d) => { const [x] = d.images!.splice(i, 1); d.images!.splice(i - 1, 0, x); })}>← Earlier</button>
                       <button type="button" disabled={i === (draft.images?.length ?? 0) - 1} onClick={() => edit((d) => { const [x] = d.images!.splice(i, 1); d.images!.splice(i + 1, 0, x); })}>Later →</button>
                       <button type="button" onClick={() => edit((d) => { d.images!.splice(i, 1); })}>Remove</button>
                     </div>
+                    {openPicker === `s-${i}` && (
+                      <FocusPicker
+                        src={im.url}
+                        focus={im.focus}
+                        onChange={(f) => edit((d) => { d.images![i].focus = f; })}
+                        previewRatios={["4/3", "16/8"]}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -309,11 +320,23 @@ export default function SeasonsAdmin() {
                     <div className="ed-cphotos">
                       {(c.images ?? []).map((im, k) => (
                         <div className="ed-cphoto" key={im.url + k}>
-                          <img src={im.url} alt="" />
-                          <button type="button" className="ed-x" onClick={() => edit((d) => { d.committees[i].images!.splice(k, 1); })}>Remove</button>
+                          <img src={im.url} alt="" style={{ objectPosition: im.focus ? `${im.focus.x}% ${im.focus.y}%` : undefined }} />
+                          <div className="ed-btns">
+                            <button type="button" onClick={() => setOpenPicker(openPicker === `c-${i}-${k}` ? null : `c-${i}-${k}`)}>{openPicker === `c-${i}-${k}` ? "Close" : "Crop"}</button>
+                            <button type="button" onClick={() => edit((d) => { d.committees[i].images!.splice(k, 1); })}>Remove</button>
+                          </div>
                         </div>
                       ))}
                     </div>
+                    {(c.images ?? []).map((im, k) => openPicker === `c-${i}-${k}` && (
+                      <FocusPicker
+                        key={`fp-${im.url}-${k}`}
+                        src={im.url}
+                        focus={im.focus}
+                        onChange={(f) => edit((d) => { d.committees[i].images![k].focus = f; })}
+                        previewRatios={["4/3"]}
+                      />
+                    ))}
                     <input type="file" accept="image/*" multiple onChange={(e) => { addPhotos(e.target.files, i); e.target.value = ""; }} />
                   </div>
                   <button type="button" className="ed-x" onClick={() => edit((d) => { d.committees.splice(i, 1); })}>Remove committee</button>

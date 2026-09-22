@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import FocusPicker from "./FocusPicker";
+import type { Focus } from "@/lib/focus";
 
 interface Member {
   name: string;
   role: string;
   photo: string | null;
+  focus?: Focus;
 }
 
 /** Shrinks a photo in the browser (square-ish avatars need little more than 800px). */
@@ -30,6 +33,7 @@ export default function TeamAdmin() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [openFocus, setOpenFocus] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/team", { cache: "no-store" })
@@ -117,7 +121,7 @@ export default function TeamAdmin() {
           <div className="ed-item-row" key={i}>
             <div className="ed-inline">
               {m.photo ? (
-                <img src={m.photo} alt="" width={56} height={56} style={{ borderRadius: 10, objectFit: "cover" }} />
+                <img src={m.photo} alt="" width={56} height={56} style={{ borderRadius: 10, objectFit: "cover", objectPosition: m.focus ? `${m.focus.x}% ${m.focus.y}%` : undefined }} />
               ) : (
                 <div style={{ width: 56, height: 56, borderRadius: 10, background: "#e6dfcf", flex: "none" }} />
               )}
@@ -127,11 +131,20 @@ export default function TeamAdmin() {
             <div className="ed-inline">
               <label className="btn ghost ed-file" htmlFor={`tp-${i}`}>{m.photo ? "Change photo" : "Add photo"}</label>
               <input id={`tp-${i}`} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { upload(i, e.target.files?.[0]); e.target.value = ""; }} />
+              {m.photo && <button type="button" className="btn ghost" onClick={() => setOpenFocus(openFocus === i ? null : i)}>{openFocus === i ? "Close" : "Adjust crop"}</button>}
               {m.photo && <button type="button" className="ed-x" onClick={() => edit((t) => { t[i].photo = null; })}>Remove photo</button>}
               <button type="button" className="btn ghost" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
               <button type="button" className="btn ghost" onClick={() => move(i, 1)} disabled={i === team.length - 1} aria-label="Move down">↓</button>
               <button type="button" className="ed-x" onClick={() => edit((t) => { t.splice(i, 1); })}>Remove</button>
             </div>
+            {m.photo && openFocus === i && (
+              <FocusPicker
+                src={m.photo}
+                focus={m.focus}
+                onChange={(f) => edit((t) => { t[i].focus = f; })}
+                previewRatios={["1"]}
+              />
+            )}
           </div>
         ))}
         <button type="button" className="btn ghost" onClick={() => edit((t) => { t.push({ name: "", role: "", photo: null }); })}>+ Add member</button>

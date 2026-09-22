@@ -71,7 +71,7 @@ export default async function CommitteePage({ params }: P) {
         {c.images && c.images.length > 0 && (
           <>
             <div className="subhead">{d.gallery_l}</div>
-            <Gallery items={c.images.map((im) => ({ url: im.url }))} />
+            <Gallery items={c.images.map((im) => ({ url: im.url, focus: im.focus }))} />
           </>
         )}
 

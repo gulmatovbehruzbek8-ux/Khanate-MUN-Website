@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
+import { focusStyle } from "@/lib/focus";
 
 export const revalidate = 3600;
 
@@ -26,7 +27,7 @@ export default async function Seasons({ params }: { params: Promise<{ lang: stri
           <div className="committees next-wrap">
             {upcoming.map((s) => (
               <Link className="com next" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
-                {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
+                {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" style={focusStyle(s.images[0].focus)} />}
                 <small>{d.soon_l}</small>
                 <h3>{s.title[lang]} · {s.date[lang]}</h3>
                 <p>{s.summary[lang]}</p>
@@ -38,7 +39,7 @@ export default async function Seasons({ params }: { params: Promise<{ lang: stri
         <div className="committees">
           {past.map((s, i) => (
             <Link className="com" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
-              {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
+              {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" style={focusStyle(s.images[0].focus)} />}
               <small>{i === 0 ? d.latest_l : d.past_l}</small>
               <h3>{s.title[lang]} · {s.date[lang]}</h3>
               <p>{s.summary[lang]}</p>

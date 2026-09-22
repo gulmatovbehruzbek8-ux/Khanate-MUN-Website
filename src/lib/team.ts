@@ -1,6 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { site } from "@/content/site";
+import type { Focus } from "@/lib/focus";
+import { sanitizeFocus } from "@/lib/focus";
 import { isSafeImageUrl } from "./seasons";
 import { DATA_TAG } from "./settings";
 import { getStore } from "./store";
@@ -9,6 +11,7 @@ export interface Member {
   name: string;
   role: string;
   photo: string | null;
+  focus?: Focus;
 }
 
 const KEY = "team";
@@ -28,7 +31,12 @@ export function sanitizeTeam(input: unknown): Member[] {
     .map((raw) => {
       const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
       const photo = str(o.photo, 600);
-      return { name: str(o.name, 80), role: str(o.role, 80), photo: photo && isSafeImageUrl(photo) ? photo : null };
+      return {
+        name: str(o.name, 80),
+        role: str(o.role, 80),
+        photo: photo && isSafeImageUrl(photo) ? photo : null,
+        focus: sanitizeFocus(o.focus),
+      };
     })
     .filter((m) => m.name);
 }

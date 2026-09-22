@@ -3,6 +3,7 @@ import Link from "next/link";
 import { site } from "@/content/site";
 import { getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
+import { focusStyle } from "@/lib/focus";
 
 export const revalidate = 3600;
 
@@ -42,7 +43,7 @@ export default async function About({ params }: { params: Promise<{ lang: string
           <div className="committees next-wrap">
             {seasons.filter((s) => s.upcoming).map((s) => (
               <Link className="com next" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
-                {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
+                {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" style={focusStyle(s.images[0].focus)} />}
                 <small>{d.soon_l}</small>
                 <h3>{s.title[lang]} · {s.date[lang]}</h3>
                 <p>{s.summary[lang]}</p>
@@ -54,7 +55,7 @@ export default async function About({ params }: { params: Promise<{ lang: string
         <div className="committees">
           {seasons.filter((s) => !s.upcoming).map((s, i) => (
             <Link className="com" key={s.slug} href={`/${lang}/seasons/${s.slug}`}>
-              {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" />}
+              {s.images?.[0] && <img className="cover-thumb" src={s.images[0].url} alt="" loading="lazy" style={focusStyle(s.images[0].focus)} />}
               <small>{i === 0 ? d.latest_l : d.past_l}</small>
               <h3>{s.title[lang]} · {s.date[lang]}</h3>
               <p>{s.summary[lang]}</p>

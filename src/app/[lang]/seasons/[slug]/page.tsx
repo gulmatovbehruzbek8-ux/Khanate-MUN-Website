@@ -38,7 +38,7 @@ export default async function SeasonPage({ params }: P) {
 
         {s.images?.[0] && (
           <figure className="cover">
-            <CoverImage item={{ url: s.images[0].url, caption: s.images[0].caption?.[lang] || s.title[lang] }} />
+            <CoverImage item={{ url: s.images[0].url, caption: s.images[0].caption?.[lang] || s.title[lang], focus: s.images[0].focus }} />
           </figure>
         )}
 
@@ -104,7 +104,7 @@ export default async function SeasonPage({ params }: P) {
         {s.images && s.images.length > 0 && (
           <>
             {s.images.length > 1 && <div className="subhead">{d.gallery_l}</div>}
-            <Gallery items={s.images.map((im) => ({ url: im.url, caption: im.caption?.[lang] }))} from={1} />
+            <Gallery items={s.images.map((im) => ({ url: im.url, caption: im.caption?.[lang], focus: im.focus }))} from={1} />
           </>
         )}
 
