@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import FocusPicker from "./FocusPicker";
+import FocusPicker, { SQUARE_BOX } from "./FocusPicker";
 import type { Focus } from "@/lib/focus";
 
 interface Member {
@@ -142,7 +142,7 @@ export default function TeamAdmin() {
                 src={m.photo}
                 focus={m.focus}
                 onChange={(f) => edit((t) => { t[i].focus = f; })}
-                previewRatios={["1"]}
+                boxes={SQUARE_BOX}
               />
             )}
           </div>

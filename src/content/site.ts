@@ -26,7 +26,6 @@ export const site = {
 
   fees: [
     { key: "delegate_meal", uzs: 85000 },
-    { key: "observer", uzs: 20000 },
   ] as const,
 
   // title/desc are keys in the dictionaries.
@@ -47,7 +46,7 @@ export const site = {
     { name: "Behruzbek Gulmatov", role: "Chief Operator", photo: "/team/behruzbek.jpg" },
     { name: "Ruxshona", role: "Delegate Affairs Officer (DAO)", photo: "/team/ruxshona.jpg" },
     { name: "Ibratbek", role: "CFO", photo: "/team/ibratbek.jpg" },
-    { name: "Smdjan", role: "Logistician", photo: null },
+    { name: "Samadjon", role: "Logistician", photo: null },
   ] as { name: string; role: string; photo: string | null }[],
 };
 

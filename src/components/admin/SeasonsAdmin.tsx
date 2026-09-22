@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { Chair, Committee, L, Season, SeasonImage } from "@/content/seasons";
-import FocusPicker from "./FocusPicker";
+import FocusPicker, { COMMITTEE_BOXES, SEASON_BOXES } from "./FocusPicker";
 
 const blankL = (): L => ({ en: "", uz: "" });
 
@@ -241,7 +241,7 @@ export default function SeasonsAdmin() {
                         src={im.url}
                         focus={im.focus}
                         onChange={(f) => edit((d) => { d.images![i].focus = f; })}
-                        previewRatios={["4/3", "16/8"]}
+                        boxes={SEASON_BOXES}
                       />
                     )}
                   </div>
@@ -334,7 +334,7 @@ export default function SeasonsAdmin() {
                         src={im.url}
                         focus={im.focus}
                         onChange={(f) => edit((d) => { d.committees[i].images![k].focus = f; })}
-                        previewRatios={["4/3"]}
+                        boxes={COMMITTEE_BOXES}
                       />
                     ))}
                     <input type="file" accept="image/*" multiple onChange={(e) => { addPhotos(e.target.files, i); e.target.value = ""; }} />
