@@ -41,21 +41,8 @@ export function sanitizeTeam(input: unknown): Member[] {
     .filter((m) => m.name);
 }
 
-/** The team saved from the admin panel, or the defaults in src/content/site.ts. */
-export const getTeam = cache(async (): Promise<Member[]> => {
-  try {
-    const raw = (await readContent())[KEY];
-    if (raw) {
-      // A saved member without a photo keeps the built-in photo (matched by first name) until one is uploaded.
-      const first = (n: string) => n.trim().split(/\s+/)[0].toLowerCase();
-      const defaults = new Map(site.team.filter((m) => m.photo).map((m) => [first(m.name), m.photo]));
-      return sanitizeTeam(JSON.parse(raw)).map((m) => ({ ...m, photo: m.photo ?? defaults.get(first(m.name)) ?? null }));
-    }
-  } catch (err) {
-    console.error("[team] could not read saved team, using defaults", err);
-  }
-  return site.team;
-});
+/** The team always comes from the defaults in src/content/site.ts, so a committed change is live right after deploy. */
+export const getTeam = cache(async (): Promise<Member[]> => site.team);
 
 export async function saveTeam(team: Member[]) {
   const store = getStore();

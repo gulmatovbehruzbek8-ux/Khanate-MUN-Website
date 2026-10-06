@@ -116,7 +116,7 @@ export default function TeamAdmin() {
 
       <section className="adm-panel">
         <h2>Team ({team.length})</h2>
-        <p className="adm-hint">Shown on the Team page in this order. Photos are shrunk automatically before upload.</p>
+        <p className="adm-hint">The public Team page is set in the code (src/content/site.ts), so changes made here no longer appear on the site.</p>
         {team.map((m, i) => (
           <div className="ed-item-row" key={i}>
             <div className="ed-inline">
