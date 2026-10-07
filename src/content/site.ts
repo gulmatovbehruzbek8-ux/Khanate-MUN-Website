@@ -39,10 +39,10 @@ export const site = {
   // Team, in the order shown in the team chat. Add photos by putting them in /public/team and setting `photo`.
   team: [
     { name: "Olloshukur Karimboyev", role: "Founder (CEO)", photo: null },
-    { name: "Bunyodbek Islomboyev", role: "Head Logistician", photo: null },
     { name: "Odilbek Matkarimov", role: "Finance Manager", photo: null },
     { name: "Shahrizoda Komiljanova", role: "PR Lead", photo: null },
     { name: "Islombek Otaboyev", role: "Designs Lead", photo: null },
+    { name: "Bunyodbek Islomboyev", role: "Head Logistician", photo: null },
     { name: "Behruzbek Gulmatov", role: "Chief Operator", photo: null },
     { name: "Abbos Saitjonov", role: "Media Manager", photo: null },
     { name: "Ruxshona Aminboyeva", role: "Delegate Affairs Officer (DAO)", photo: null },
