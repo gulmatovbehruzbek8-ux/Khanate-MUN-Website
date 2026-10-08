@@ -41,8 +41,19 @@ export function sanitizeTeam(input: unknown): Member[] {
     .filter((m) => m.name);
 }
 
-/** The team always comes from the defaults in src/content/site.ts, so a committed change is live right after deploy. */
-export const getTeam = cache(async (): Promise<Member[]> => site.team);
+/** The team (names, roles, photos) always comes from the defaults in src/content/site.ts, so a committed change is live right after deploy.
+ *  Only the crop focus point saved from the admin panel is layered on top, matched by name. */
+export const getTeam = cache(async (): Promise<Member[]> => {
+  let saved: Member[] = [];
+  try {
+    const raw = (await readContent())[KEY];
+    if (raw) saved = sanitizeTeam(JSON.parse(raw));
+  } catch {
+    saved = [];
+  }
+  const focusByName = new Map(saved.filter((m) => m.focus).map((m) => [m.name, m.focus as Focus]));
+  return site.team.map((m) => ({ ...m, focus: focusByName.get(m.name) ?? (m as Member).focus }));
+});
 
 export async function saveTeam(team: Member[]) {
   const store = getStore();

@@ -28,8 +28,8 @@ export default async function Team({ params }: { params: Promise<{ lang: string 
         <div className="team">
           {team.map((p, i) => (
             <div className="person" key={i}>
-              <div className="avatar" style={p.photo ? { overflow: "hidden" } : undefined}>
-                {p.photo ? <img src={p.photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", ...focusStyle(p.focus) }} /> : <Silhouette />}
+              <div className="avatar" style={p.photo ? { overflow: "hidden", position: "relative" } : undefined}>
+                {p.photo ? <img src={p.photo} alt={p.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", ...focusStyle(p.focus) }} /> : <Silhouette />}
               </div>
               <b>{p.name}</b>
               <span>{p.role}</span>
