@@ -32,6 +32,7 @@ export default function FocusPicker({
   boxes?: CropBox[];
 }) {
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
+  const [text, setText] = useState<string | null>(null); // what's being typed in the % box
   const f = focus ?? { x: 50, y: 50 };
   const zoom = f.zoom ?? 1;
   const imageAspect = natural ? natural.w / natural.h : 1;
@@ -101,13 +102,31 @@ export default function FocusPicker({
         <input
           type="range"
           min={minZoom}
-          max={MAX_ZOOM}
+          max={Math.min(MAX_ZOOM, 4)}
           step={0.01}
           value={zoom}
           onChange={(e) => setZoom(Number(e.target.value))}
           aria-label="Zoom"
         />
-        <b>{Math.round(zoom * 100)}%</b>
+        <span className="focus-pct">
+          <input
+            type="number"
+            inputMode="numeric"
+            min={Math.ceil(minZoom * 100)}
+            max={MAX_ZOOM * 100}
+            step={1}
+            value={text ?? String(Math.round(zoom * 100))}
+            aria-label="Crop size in percent"
+            onChange={(e) => {
+              setText(e.target.value);
+              const v = Number(e.target.value);
+              if (e.target.value !== "" && Number.isFinite(v) && v > 0) setZoom(v / 100);
+            }}
+            onBlur={() => setText(null)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setText(null); } }}
+          />
+          %
+        </span>
       </label>
       <div className="focus-row">
         <span className="focus-hint">Click or drag on the photo to move the box. Slide left to show more of the photo, right to zoom in. The shape stays the same.</span>

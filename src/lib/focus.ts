@@ -10,7 +10,7 @@ export type Focus = { x: number; y: number; zoom?: number };
 export const CENTER_FOCUS: Focus = { x: 50, y: 50 };
 
 export const MIN_ZOOM = 0.3;
-export const MAX_ZOOM = 4;
+export const MAX_ZOOM = 10;
 
 /** Accepts untrusted JSON and returns a clean Focus, or undefined. */
 export function sanitizeFocus(v: unknown): Focus | undefined {

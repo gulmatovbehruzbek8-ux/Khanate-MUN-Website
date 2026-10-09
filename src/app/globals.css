@@ -457,7 +457,8 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
 .focus-area img{display:block;width:100%;height:auto;user-select:none;pointer-events:none;border-radius:8px;border:1px solid var(--line)}
 .focus-zoom{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700;color:var(--ink)}
 .focus-zoom input{flex:1;min-width:120px;max-width:360px;padding:0;border:0;background:none;accent-color:var(--accent)}
-.focus-zoom b{min-width:44px;font-variant-numeric:tabular-nums}
+.focus-pct{display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.focus-zoom .focus-pct input{width:76px;flex:none;min-width:0;max-width:none;padding:6px 8px;border:1px solid var(--line);background:#fffdf8;font-size:14px}
 /* images that are zoomed from the focus picker must be clipped by their frame */
 .zoomclip{overflow:hidden;border-radius:8px;border:1px solid var(--line)}
 .zoomclip img{border:0!important;border-radius:0!important;display:block}
