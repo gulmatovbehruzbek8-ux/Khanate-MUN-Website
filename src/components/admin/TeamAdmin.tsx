@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import FocusPicker, { SQUARE_BOX } from "./FocusPicker";
-import type { Focus } from "@/lib/focus";
+import { focusStyle, type Focus } from "@/lib/focus";
 
 interface Member {
   name: string;
@@ -121,7 +121,9 @@ export default function TeamAdmin() {
           <div className="ed-item-row" key={i}>
             <div className="ed-inline">
               {m.photo ? (
-                <img src={m.photo} alt="" width={56} height={56} style={{ borderRadius: 10, objectFit: "cover", objectPosition: m.focus ? `${m.focus.x}% ${m.focus.y}%` : undefined }} />
+                <div style={{ width: 56, height: 56, borderRadius: 10, overflow: "hidden", background: "#e6dfcf", flex: "none" }}>
+                  <img src={m.photo} alt="" width={56} height={56} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", ...focusStyle(m.focus) }} />
+                </div>
               ) : (
                 <div style={{ width: 56, height: 56, borderRadius: 10, background: "#e6dfcf", flex: "none" }} />
               )}

@@ -452,8 +452,15 @@ input:focus,select:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3
 /* Focus picker: choose which part of a photo stays visible when it's cropped.
    Each box is drawn right on the full photo at its true crop shape and position. */
 .focus-pick{grid-column:1/-1;display:grid;gap:10px;margin-top:4px;padding:12px;border:1px dashed var(--line);border-radius:10px;background:var(--card)}
-.focus-area{position:relative;width:100%;max-width:420px;cursor:crosshair;border-radius:8px;overflow:hidden;border:1px solid var(--line);touch-action:none}
-.focus-area img{display:block;width:100%;height:auto;user-select:none;pointer-events:none}
+.focus-stage{max-width:100%;overflow-x:auto;overflow-y:hidden;box-sizing:content-box;width:fit-content}
+.focus-area{position:relative;max-width:none;cursor:crosshair;touch-action:none}
+.focus-area img{display:block;width:100%;height:auto;user-select:none;pointer-events:none;border-radius:8px;border:1px solid var(--line)}
+.focus-zoom{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700;color:var(--ink)}
+.focus-zoom input{flex:1;min-width:120px;max-width:360px;padding:0;border:0;background:none;accent-color:var(--accent)}
+.focus-zoom b{min-width:44px;font-variant-numeric:tabular-nums}
+/* images that are zoomed from the focus picker must be clipped by their frame */
+.zoomclip{overflow:hidden;border-radius:8px;border:1px solid var(--line)}
+.zoomclip img{border:0!important;border-radius:0!important;display:block}
 .focus-box{position:absolute;box-sizing:border-box;border:2px solid;box-shadow:0 0 0 1px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.6);pointer-events:none}
 .focus-box span{position:absolute;top:0;left:0;color:#fff;font-size:11px;font-weight:700;padding:2px 6px;border-radius:0 0 4px 0;white-space:nowrap}
 .focus-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}

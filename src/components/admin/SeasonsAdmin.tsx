@@ -3,6 +3,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { Chair, Committee, L, Season, SeasonImage } from "@/content/seasons";
 import FocusPicker, { COMMITTEE_BOXES, SEASON_BOXES } from "./FocusPicker";
+import { focusStyle } from "@/lib/focus";
 
 const blankL = (): L => ({ en: "", uz: "" });
 
@@ -225,7 +226,7 @@ export default function SeasonsAdmin() {
               <div className="ed-photos">
                 {(draft.images ?? []).map((im: SeasonImage, i: number) => (
                   <div className="ed-photo" key={im.url + i}>
-                    <img src={im.url} alt="" style={{ objectPosition: im.focus ? `${im.focus.x}% ${im.focus.y}%` : undefined }} />
+                    <div className="zoomclip"><img src={im.url} alt="" style={focusStyle(im.focus)} /></div>
                     {i === 0 && <span className="pill">Cover</span>}
                     <input aria-label="Caption in English" placeholder="Caption (EN)" value={im.caption?.en ?? ""} onChange={(e) => edit((d) => { const c = d.images![i]; c.caption = { en: e.target.value, uz: c.caption?.uz ?? "" }; })} />
                     <input aria-label="Caption in Uzbek" placeholder="Caption (UZ)" value={im.caption?.uz ?? ""} onChange={(e) => edit((d) => { const c = d.images![i]; c.caption = { en: c.caption?.en ?? "", uz: e.target.value }; })} />
@@ -320,7 +321,7 @@ export default function SeasonsAdmin() {
                     <div className="ed-cphotos">
                       {(c.images ?? []).map((im, k) => (
                         <div className="ed-cphoto" key={im.url + k}>
-                          <img src={im.url} alt="" style={{ objectPosition: im.focus ? `${im.focus.x}% ${im.focus.y}%` : undefined }} />
+                          <div className="zoomclip"><img src={im.url} alt="" style={focusStyle(im.focus)} /></div>
                           <div className="ed-btns">
                             <button type="button" onClick={() => setOpenPicker(openPicker === `c-${i}-${k}` ? null : `c-${i}-${k}`)}>{openPicker === `c-${i}-${k}` ? "Close" : "Crop"}</button>
                             <button type="button" onClick={() => edit((d) => { d.committees[i].images!.splice(k, 1); })}>Remove</button>
