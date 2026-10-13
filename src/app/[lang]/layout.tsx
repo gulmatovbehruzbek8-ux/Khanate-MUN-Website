@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     title: { default: "KhanateMUN", template: "%s · KhanateMUN" },
     description: getDict(lang).lead,
     alternates: { languages: { en: "/en", uz: "/uz" } },
+    verification: { google: "ECh30Z9GwfaqkAv5ktYkk5lEnV2c4_3mo9ROnvUw6qw" },
   };
 }
 
