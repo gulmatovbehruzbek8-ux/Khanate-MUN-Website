@@ -15,7 +15,7 @@ export const generateStaticParams = () => langs.map((lang) => ({ lang }));
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const lang = await getLang(params);
-  const host = process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+  const host = "https://khanate-mun-website.vercel.app";
   const d = getDict(lang);
   return {
     metadataBase: new URL(host),
