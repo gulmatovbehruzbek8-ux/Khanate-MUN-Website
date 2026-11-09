@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findCommittee } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
+import { getAlternates } from "@/lib/seo";
 import Gallery from "@/components/Gallery";
 
 type P = { params: Promise<{ lang: string; slug: string }> };
@@ -11,9 +12,15 @@ type P = { params: Promise<{ lang: string; slug: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
+  const { slug } = await params;
   const lang = await getLang(params);
-  const found = await findCommittee((await params).slug);
-  return { title: found ? found.committee.body[lang] : "Not found" };
+  const found = await findCommittee(slug);
+  if (!found) return { title: "Not found" };
+  return {
+    title: `${found.committee.body[lang]} · ${found.season.title[lang]}`,
+    description: found.committee.agenda[lang] || found.committee.about[lang],
+    alternates: getAlternates(lang, `/committees/${slug}`),
+  };
 }
 
 export default async function CommitteePage({ params }: P) {

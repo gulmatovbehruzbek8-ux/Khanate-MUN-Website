@@ -2,11 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
+import { getAlternates } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-  return { title: getDict(await getLang(params)).n_com };
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: d.n_com,
+    description: d.c_p,
+    alternates: getAlternates(lang, "/committees"),
+  };
 }
 
 export default async function Committees({ params }: { params: Promise<{ lang: string }> }) {

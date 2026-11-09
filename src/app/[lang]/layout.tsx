@@ -10,15 +10,15 @@ import Footer from "@/components/Footer";
 import Motion from "@/components/Motion";
 import { langs } from "@/lib/dictionaries";
 import { getDict, getLang } from "@/lib/i18n";
+import { SITE_URL } from "@/lib/seo";
 
 export const generateStaticParams = () => langs.map((lang) => ({ lang }));
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const lang = await getLang(params);
-  const host = "https://khanate-mun-website.vercel.app";
   const d = getDict(lang);
   return {
-    metadataBase: new URL(host),
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       type: "website",
       siteName: "KhanateMUN",
@@ -28,8 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     },
     twitter: { card: "summary_large_image", title: "KhanateMUN", description: d.lead, images: ["/og.jpg"] },
     title: { default: "KhanateMUN", template: "%s · KhanateMUN" },
-    description: getDict(lang).lead,
-    alternates: { languages: { en: "/en", uz: "/uz" } },
+    description: d.lead,
     verification: { google: "ECh30Z9GwfaqkAv5ktYkk5lEnV2c4_3mo9ROnvUw6qw" },
   };
 }

@@ -3,11 +3,18 @@ import Link from "next/link";
 import { getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
 import { focusStyle } from "@/lib/focus";
+import { getAlternates } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-  return { title: getDict(await getLang(params)).n_seasons };
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: d.n_seasons,
+    description: d.seasons_h,
+    alternates: getAlternates(lang, "/seasons"),
+  };
 }
 
 export default async function Seasons({ params }: { params: Promise<{ lang: string }> }) {

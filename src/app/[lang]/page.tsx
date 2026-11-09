@@ -1,12 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import { site } from "@/content/site";
 import { getDict, getLang } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 import { getSeasons } from "@/lib/seasons";
+import { getAlternates } from "@/lib/seo";
 import Gallery from "@/components/Gallery";
 
 export const revalidate = 600;
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: "KhanateMUN",
+    description: d.lead,
+    alternates: getAlternates(lang, ""),
+  };
+}
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const lang = await getLang(params);

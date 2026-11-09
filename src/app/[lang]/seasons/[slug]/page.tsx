@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSeason, getSeasons } from "@/lib/seasons";
 import { getDict, getLang } from "@/lib/i18n";
+import { getAlternates } from "@/lib/seo";
 import Gallery, { CoverImage } from "@/components/Gallery";
 
 type P = { params: Promise<{ lang: string; slug: string }> };
@@ -11,9 +12,15 @@ type P = { params: Promise<{ lang: string; slug: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
+  const { slug } = await params;
   const lang = await getLang(params);
-  const s = await getSeason((await params).slug);
-  return { title: s ? `${s.title[lang]} · ${s.date[lang]}` : "Not found" };
+  const s = await getSeason(slug);
+  if (!s) return { title: "Not found" };
+  return {
+    title: `${s.title[lang]} · ${s.date[lang]}`,
+    description: s.summary[lang],
+    alternates: getAlternates(lang, `/seasons/${slug}`),
+  };
 }
 
 const fmt = (n: number) => `${n.toLocaleString("en-US").replace(/,/g, " ")} UZS`;

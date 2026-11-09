@@ -4,11 +4,18 @@ import { site } from "@/content/site";
 import { getDict, getLang } from "@/lib/i18n";
 import { getSettings } from "@/lib/settings";
 import { getSeasons } from "@/lib/seasons";
+import { getAlternates } from "@/lib/seo";
 
 export const revalidate = 600;
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-  return { title: getDict(await getLang(params)).n_reg };
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: d.n_reg,
+    description: d.r_p,
+    alternates: getAlternates(lang, "/register"),
+  };
 }
 
 const feeLabel = { delegate: "fee1", delegate_meal: "fee2" } as const;

@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { getDict, getLang } from "@/lib/i18n";
 import { getTeam } from "@/lib/team";
 import { focusStyle } from "@/lib/focus";
+import { getAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-  return { title: getDict(await getLang(params)).n_team };
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: d.n_team,
+    description: d.t_p,
+    alternates: getAlternates(lang, "/team"),
+  };
 }
 
 const Silhouette = () => (

@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import { faq } from "@/content/faq";
 import { site } from "@/content/site";
 import { getDict, getLang } from "@/lib/i18n";
+import { getAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-  return { title: getDict(await getLang(params)).n_faq };
+  const lang = await getLang(params);
+  const d = getDict(lang);
+  return {
+    title: d.n_faq,
+    description: d.faq_p,
+    alternates: getAlternates(lang, "/faq"),
+  };
 }
 
 export default async function Faq({ params }: { params: Promise<{ lang: string }> }) {

@@ -1,7 +1,13 @@
 import type { MetadataRoute } from "next";
-
-const host = () => "https://khanate-mun-website.vercel.app";
+import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  return { rules: { userAgent: "*", allow: "/", disallow: ["/admin", "/api"] }, sitemap: `${host()}/sitemap.xml` };
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/admin", "/api"],
+    },
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  };
 }
